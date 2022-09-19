@@ -4,9 +4,8 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "dev:tsc": "tsc --watch && nodemon dist/index.js",
-    "dev:js": "nodemon dist/index.js",
-    "test": "tsc && mocha test/general.js"
+    "dev": "tsc && node dist/index.js",
+    "test": "tsc && mocha test/general.js --exit"
   },
   "repository": "https://github.com/farawayCC/WolfMQ.git",
   "author": "Alexey Klygin <iosdevfarconsoft@gmail.com>",

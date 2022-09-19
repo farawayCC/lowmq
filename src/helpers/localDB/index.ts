@@ -1,6 +1,6 @@
 // const lowdb = import('lowdb')
 import lowdb, { JSONFile, Low } from 'lowdb'
-import config, { rootPath } from '../../config.js';
+import config, { Message, rootPath } from '../../config.js';
 
 
 export type DB = {
@@ -18,7 +18,7 @@ export type Data = {
         [key in
         string
         // PossibleKeys
-        ]: Object[]
+        ]: Message[]
     };
 }
 
@@ -28,17 +28,11 @@ const defaultMessages = {
     'password-change-error': [],
 }
 
-const initLowDB = async (): Promise<DB> => {
+const initLowDB = async () => {
     const adapter = new JSONFile<Data>(config.dbFilePath)
-    //TODO: This is nonsense: assigning to any should not be allowed. Rewrite for prod
-    const db: any = new Low(adapter)
+    const db = new Low(adapter)
     await db.read()
-
-    console.log('LowDB initialized and read')
-    if (!db)
-        throw new Error('LowDB not initialized')
-    if (JSON.stringify(db.data) === '{}')
-        db.data = { messages: defaultMessages }
+    db.data = db.data || { messages: defaultMessages }
     return db
 }
 
