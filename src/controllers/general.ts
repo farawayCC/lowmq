@@ -45,13 +45,15 @@ export const getMessage = async (req: Request, res: Response) => {
 
 export const postMessage = async (req: Request, res: Response) => {
     const { key, value } = req.body
-    if (!key || !value)
-        return res.status(400).send('No Key or Value provided')
+    if (!key)
+        return res.status(400).send('No Key provided')
+    if (!value)
+        return res.status(400).send('No Value provided')
 
     const lowDB = await initLowDB()
     const dbData = lowDB.data
     if (!dbData)
-        return res.status(500).send('DB not initialized')
+        return res.status(500).send('DB not initialized. Contact admin')
 
     if (!dbData.messages || !dbData.messages[key]) {
         dbData.messages = {}
@@ -69,7 +71,7 @@ export const postMessage = async (req: Request, res: Response) => {
 export const deleteMessage = async (req: Request, res: Response) => {
     const query = req.query;
     const key: string = query.key as string;
-    const _id: string = query._id as string;
+    const _id: string = query._id as string || query.id as string;
 
     if (!key)
         return res.status(400).send('No Key provided')
@@ -78,13 +80,15 @@ export const deleteMessage = async (req: Request, res: Response) => {
 
     const lowDB = await initLowDB()
     const dbData = lowDB.data
+
     if (!dbData)
-        return res.status(500).send('DB not initialized')
+        return res.status(500).send('DB not initialized. Contact admin')
 
+    if (!dbData.messages)
+        return res.status(404).send('No messages found. Messages are empty')
 
-    if (!dbData.messages || !dbData.messages[key]) {
-        return res.status(404).send('No message found')
-    }
+    if (!dbData.messages[key])
+        return res.status(404).send(`No messages found for key: ${key}`)
 
     let messageIndex = -1
     dbData.messages[key].forEach(message => {
@@ -92,7 +96,7 @@ export const deleteMessage = async (req: Request, res: Response) => {
             messageIndex = dbData.messages[key].indexOf(message)
     });
     if (messageIndex === -1)
-        return res.status(404).send('No message found')
+        return res.status(404).send(`No messages found for _id: ${_id}`)
 
     const deletedMessages = dbData.messages[key].splice(messageIndex, 1)
 
