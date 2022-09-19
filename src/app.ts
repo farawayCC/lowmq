@@ -14,7 +14,8 @@ app.use('', authRouter)
 
 const PORT = process.env.PORT || 8788;
 app.listen(PORT, () => {
-    console.log(`WolfMQ started with url: http://localhost:${PORT}`);
+    console.log(`WolfMQ started with url: http://localhost:${PORT}`)
+    console.log(`Basic tutorial and api reference: http://localhost:${PORT}/help`);
 });
 
 export default app;

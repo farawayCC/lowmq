@@ -9,15 +9,19 @@ import { Message } from '../config.js';
 
 
 export const getMessage = async (req: Request, res: Response) => {
+    //TODO: add get by _id
     const query = req.query;
     if (!query.key)
         return res.status(400).send('No key provided');
 
     // init db
     const db = await initLowDB();
-    if (!db.data) {
+    if (!db.data)
         return res.status(500).send('DB not initialized');
-    }
+
+    if (!db.data.messages)
+        return res.status(404).send('No messages found');
+
 
     // Get messages for query key
     const qk: string = query.key as string;
@@ -94,4 +98,32 @@ export const deleteMessage = async (req: Request, res: Response) => {
 
     await lowDB.write()
     res.send(deletedMessages);
+}
+
+export const helpInfo = async (req: Request, res: Response) => {
+    res.send(`
+    <h1>WolfMQ</h1>
+    Simple to use message queue for your projects. Build as a simple REST API with little amount of dependencies.<br>
+    <h2>API</h2>
+    <ul>
+        <li><b>GET</b> /msg?key=</li>
+        Returns a random message for the given key. Freezes the message for 5 minutes.
+        <li><b>POST</b> /msg</li>
+        Creates a new message for the given key. Returns the created message.
+        <li><b>DELETE</b> /msg?key=&_id=</li>
+        Deletes the message with the given ID for the given key. Returns the deleted message.
+    </ul>
+
+    <h2>Example</h2>
+    <ol> 
+    <li>Create a <b>new message</b> for the key "test":</li>
+    <code>curl -X POST -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' http://localhost:8788/msg</code><br>
+
+    <li><b>Get a message</b> for the key "test":</li>
+    <code>curl -X GET "http://localhost:8788/msg?key=test"</code><br>
+    
+    <li><b>Delete the message</b> with the given ID for the key "test":</li>
+    <code>curl -X DELETE "http://localhost:8788/msg?key=test&_id=123456789"</code><br>
+    <small>Please pay attention that you need to provide a valid id which you have received as a response in GET /msg or POST /msg requests</small>
+    `)
 }

@@ -109,7 +109,6 @@ describe('Basic messages operations', function () {
 
         it('can delete a message', () => {
             expect(responseDeleteMsg.statusCode).to.equals(200)
-            console.log(responseDeleteMsg.body)
         });
 
         it('can not get a deleted message', () => {
