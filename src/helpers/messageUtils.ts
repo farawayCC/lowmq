@@ -1,4 +1,5 @@
 import config, { Message } from "../config.js";
+import { randomUUID } from "crypto";
 
 
 export const isMessageFrozen = (message: Message): boolean => {
@@ -19,9 +20,8 @@ export const unfreezeMessage = (message: Message): Message => {
 }
 
 export const newMessage = (key: string, value: string): Message => {
-    const newId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    const newId = randomUUID();
     return {
-        //TODO: make sure this is unique
         _id: newId,
         key,
         value,
