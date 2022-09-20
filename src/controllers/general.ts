@@ -12,7 +12,7 @@ export const getMessage = async (req: Request, res: Response) => {
     //TODO: add get by _id
     const query = req.query;
     if (!query.key)
-        return res.status(400).send('No key provided');
+        return res.status(400).send('No key provided as query for GET message request');
 
     // init db
     const db = await initLowDB();
@@ -46,9 +46,9 @@ export const getMessage = async (req: Request, res: Response) => {
 export const postMessage = async (req: Request, res: Response) => {
     const { key, value } = req.body
     if (!key)
-        return res.status(400).send('No Key provided')
+        return res.status(400).send('No Key provided in payload for GET message request')
     if (!value)
-        return res.status(400).send('No Value provided')
+        return res.status(400).send('No Value provided in payload for GET message request')
 
     const lowDB = await initLowDB()
     const dbData = lowDB.data
@@ -74,9 +74,9 @@ export const deleteMessage = async (req: Request, res: Response) => {
     const _id: string = query._id as string || query.id as string;
 
     if (!key)
-        return res.status(400).send('No Key provided')
+        return res.status(400).send('No Key provided as query for GET message request')
     if (!_id)
-        return res.status(400).send('No ID provided')
+        return res.status(400).send('No ID provided as query for GET message request')
 
     const lowDB = await initLowDB()
     const dbData = lowDB.data
@@ -105,10 +105,12 @@ export const deleteMessage = async (req: Request, res: Response) => {
 }
 
 export const helpInfo = async (req: Request, res: Response) => {
+    const currentUrl = req.protocol + '://' + req.get('host')// + req.originalUrl;
+    console.log("🚀 ~ file: general.ts ~ line 109 ~ helpInfo ~ urlUserCurrentlyIn", currentUrl)
     const defaultPassword = config.defaultPassword;
-    const postMsgCommand = `curl -X POST -H "Authorization: token ${defaultPassword}" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' http://localhost:8788/msg`
-    const getMsgCommand = `curl -X GET -H "Authorization: token ${defaultPassword}" "http://localhost:8788/msg?key=test"`
-    const deleteMsgCommand = `curl -X DELETE -H "Authorization: token ${defaultPassword}" "http://localhost:8788/msg?key=test&_id=123456789"`
+    const postMsgCommand = `curl -X POST -H "Authorization: token ${defaultPassword}" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' ${currentUrl}/msg`
+    const getMsgCommand = `curl -X GET -H "Authorization: token ${defaultPassword}" "${currentUrl}/msg?key=test"`
+    const deleteMsgCommand = `curl -X DELETE -H "Authorization: token ${defaultPassword}" "${currentUrl}/msg?key=test&_id=123456789"`
     res.send(`
     <h1>WolfMQ</h1>
     Simple to use message queue for your projects. Build as a simple REST API with little amount of dependencies.<br>
