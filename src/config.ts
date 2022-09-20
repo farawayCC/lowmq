@@ -14,7 +14,8 @@ export type Message = {
 
 const config = {
     dbFilePath: path.join(rootPath, 'resources', 'db.json'),
-    messageFreezeTimeMinutes: 5
+    messageFreezeTimeMinutes: 5,
+    defaultPassword: 'woof'
 }
 
 export default config

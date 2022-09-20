@@ -3,6 +3,7 @@ import { Low, JSONFile } from 'lowdb';
 import { join, dirname } from 'path';
 import generalRouter from './router/general.js';
 import authRouter from './router/auth.js';
+import { checkDefaults } from './helpers/utils.js';
 const app = express();
 
 
@@ -11,6 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('', generalRouter)
 app.use('', authRouter)
+
+checkDefaults();
 
 const PORT = process.env.PORT || 8788;
 app.listen(PORT, () => {

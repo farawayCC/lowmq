@@ -8,6 +8,7 @@ import * as url from "url";
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 
+const defaultAuthValue = 'Basic woof'
 // before all
 const pathToDB = path.join(__dirname, '../', 'resources', 'db.json')
 const clearDB = () => {
@@ -41,15 +42,19 @@ describe('Basic messages operations', function () {
         before(async () => {
             responseNewMsg = await request(app)
                 .post(route)
+                .set('Authorization', defaultAuthValue)
                 .send({ key: msgName, value });
             responseReadMsg = await request(app)
                 .get(route)
+                .set('Authorization', defaultAuthValue)
                 .query({ 'key': msgName });
             responseReadAlreadyFetchedMsg = await request(app)
                 .get(route)
+                .set('Authorization', defaultAuthValue)
                 .query({ 'key': msgName });
             responseReadEmptyMsg = await request(app)
                 .get(route)
+                .set('Authorization', defaultAuthValue)
                 .query({ 'key': 'empty' });
         })
 
@@ -98,12 +103,15 @@ describe('Basic messages operations', function () {
             clearDB()
             responseNewMsg = await request(app)
                 .post(route)
+                .set('Authorization', defaultAuthValue)
                 .send({ key: msgName, value });
             responseDeleteMsg = await request(app)
                 .delete(route)
+                .set('Authorization', defaultAuthValue)
                 .query({ '_id': responseNewMsg.body._id, 'key': msgName });
             responseReadDeletedMsg = await request(app)
                 .get(route)
+                .set('Authorization', defaultAuthValue)
                 .query({ 'key': msgName });
         })
 

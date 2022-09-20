@@ -5,7 +5,7 @@ import {
     newMessage,
 } from '../helpers/messageUtils.js';
 import initLowDB from '../helpers/localDB/index.js';
-import { Message } from '../config.js';
+import config, { Message } from '../config.js';
 
 
 export const getMessage = async (req: Request, res: Response) => {
@@ -105,6 +105,10 @@ export const deleteMessage = async (req: Request, res: Response) => {
 }
 
 export const helpInfo = async (req: Request, res: Response) => {
+    const defaultPassword = config.defaultPassword;
+    const postMsgCommand = `curl -X POST -H "Authorization: token ${defaultPassword}" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' http://localhost:8788/msg`
+    const getMsgCommand = `curl -X GET -H "Authorization: token ${defaultPassword}" "http://localhost:8788/msg?key=test"`
+    const deleteMsgCommand = `curl -X DELETE -H "Authorization: token ${defaultPassword}" "http://localhost:8788/msg?key=test&_id=123456789"`
     res.send(`
     <h1>WolfMQ</h1>
     Simple to use message queue for your projects. Build as a simple REST API with little amount of dependencies.<br>
@@ -121,13 +125,13 @@ export const helpInfo = async (req: Request, res: Response) => {
     <h2>Example</h2>
     <ol> 
     <li>Create a <b>new message</b> for the key "test":</li>
-    <code>curl -X POST -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' http://localhost:8788/msg</code><br>
+    <code>${postMsgCommand}</code><br>
 
     <li><b>Get a message</b> for the key "test":</li>
-    <code>curl -X GET "http://localhost:8788/msg?key=test"</code><br>
+    <code>${getMsgCommand}</code><br>
     
     <li><b>Delete the message</b> with the given ID for the key "test":</li>
-    <code>curl -X DELETE "http://localhost:8788/msg?key=test&_id=123456789"</code><br>
+    <code>${deleteMsgCommand}</code><br>
     <small>Please pay attention that you need to provide a valid id which you have received as a response in GET /msg or POST /msg requests</small>
     `)
 }
