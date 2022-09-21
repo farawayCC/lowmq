@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <script>
+        window.addEventListener("load", function () {
+            const path = window.location.href.replace('/help', '') // https://rentdota2.com/
+
+            const toReplace = document.querySelectorAll("url")
+            toReplace.forEach(function (element) {
+                element.innerHTML = path
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <h1>WolfMQ</h1>
+    Simple to use message queue for your projects. Build as a simple REST API with little amount of dependencies.<br>
+    <h2>API</h2>
+    <ul>
+        <li><b>GET</b> /msg?key=</li>
+        Returns a random message for the given key. Freezes the message for 5 minutes.
+        <li><b>POST</b> /msg</li>
+        Creates a new message for the given key. Returns the created message.
+        <li><b>DELETE</b> /msg?key=&amp;_id=</li>
+        Deletes the message with the given ID for the given key. Returns the deleted message.
+    </ul>
+
+    <h2>Example</h2>
+    <ol>
+        <li>Create a <b>new message</b> for the key "test":</li>
+        <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' <url></url>/msg</code><br>
+
+        <li><b>Get a message</b> for the key "test":</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test"</code><br>
+
+        <li><b>Delete the message</b> with the given ID for the key "test":</li>
+        <code>curl -X DELETE -H "Authorization: token woof" "<url></url>/msg?key=test&amp;_id=123456789"</code><br>
+        <small>Please pay attention that you need to provide a valid id which you have received as a response in GET
+            /msg or
+            POST /msg requests</small>
+    </ol>
+</body>
+
+</html>

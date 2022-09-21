@@ -5,7 +5,9 @@ import {
     newMessage,
 } from '../helpers/messageUtils.js';
 import initLowDB from '../helpers/localDB/index.js';
-import config, { Message } from '../config.js';
+import config, { Message, rootPath } from '../config.js';
+import { join } from 'path'
+import fs from 'fs/promises'
 
 
 export const getMessage = async (req: Request, res: Response) => {
@@ -105,35 +107,13 @@ export const deleteMessage = async (req: Request, res: Response) => {
 }
 
 export const helpInfo = async (req: Request, res: Response) => {
-    const currentUrl = req.protocol + '://' + req.get('host')// + req.originalUrl;
-    console.log("🚀 ~ file: general.ts ~ line 109 ~ helpInfo ~ urlUserCurrentlyIn", currentUrl)
-    const defaultPassword = config.defaultPassword;
-    const postMsgCommand = `curl -X POST -H "Authorization: token ${defaultPassword}" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' ${currentUrl}/msg`
-    const getMsgCommand = `curl -X GET -H "Authorization: token ${defaultPassword}" "${currentUrl}/msg?key=test"`
-    const deleteMsgCommand = `curl -X DELETE -H "Authorization: token ${defaultPassword}" "${currentUrl}/msg?key=test&_id=123456789"`
-    res.send(`
-    <h1>WolfMQ</h1>
-    Simple to use message queue for your projects. Build as a simple REST API with little amount of dependencies.<br>
-    <h2>API</h2>
-    <ul>
-        <li><b>GET</b> /msg?key=</li>
-        Returns a random message for the given key. Freezes the message for 5 minutes.
-        <li><b>POST</b> /msg</li>
-        Creates a new message for the given key. Returns the created message.
-        <li><b>DELETE</b> /msg?key=&_id=</li>
-        Deletes the message with the given ID for the given key. Returns the deleted message.
-    </ul>
-
-    <h2>Example</h2>
-    <ol> 
-    <li>Create a <b>new message</b> for the key "test":</li>
-    <code>${postMsgCommand}</code><br>
-
-    <li><b>Get a message</b> for the key "test":</li>
-    <code>${getMsgCommand}</code><br>
-    
-    <li><b>Delete the message</b> with the given ID for the key "test":</li>
-    <code>${deleteMsgCommand}</code><br>
-    <small>Please pay attention that you need to provide a valid id which you have received as a response in GET /msg or POST /msg requests</small>
-    `)
+    try {
+        const pathToHelpHTMLFile = join(rootPath, 'resources', 'help.html')
+        let helpHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8')
+        helpHTMLContent = helpHTMLContent.replaceAll('Authorization: token woof', `Authorization: token ${config.defaultPassword}`)
+        res.send(helpHTMLContent)
+    } catch (error) {
+        console.log("🚀 ~ file: general.ts ~ line 123 ~ helpInfo ~ error", error)
+        res.status(500).send('Error reading help.html file')
+    }
 }
