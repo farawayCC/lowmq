@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "tsc && node dist/index.js",
     "dev:ts": "tsc --watch",
-    "dev:js": "nodemon dist/index.js",
+    "dev:node": "nodemon dist/index.js",
     "test": "tsc && mocha test/general.js --exit"
   },
   "repository": "https://github.com/farawayCC/WolfMQ.git",
