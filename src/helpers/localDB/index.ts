@@ -23,7 +23,8 @@ const initLowDB = async () => {
     const adapter = new JSONFile<Data>(config.dbFilePath)
     const db = new Low(adapter)
     await db.read()
-    db.data = db.data || { messages: {} }
+    if (!db.data)
+        db.data = { messages: {} }
     return db
 }
 

@@ -52,6 +52,10 @@ export const postMessage = async (req: Request, res: Response) => {
     if (!value)
         return res.status(400).send('No Value provided in payload for GET message request')
 
+    const freezeTime = typeof req.query.freezeTimeMin === 'string'
+        ? parseInt(req.query.freezeTimeMin)
+        : config.messageFreezeTimeMinutes
+
     const lowDB = await initLowDB()
     const dbData = lowDB.data
     if (!dbData)
@@ -62,7 +66,7 @@ export const postMessage = async (req: Request, res: Response) => {
         dbData.messages[key] = []
     }
 
-    const message = newMessage(key, value)
+    const message = newMessage(key, value, freezeTime)
     dbData.messages[key].push(message)
 
     await lowDB.write()

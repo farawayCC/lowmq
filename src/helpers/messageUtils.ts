@@ -9,7 +9,9 @@ export const isMessageFrozen = (message: Message): boolean => {
 }
 
 export const freezeMessage = (message: Message): Message => {
-    const freezeTime = config.messageFreezeTimeMinutes * 60000
+    var freezeTime = message.freezeTime * 60_000;
+    freezeTime = Math.max(freezeTime, 1) // 1 min minimum
+    freezeTime = Math.min(freezeTime, 60) // 1 hour maximum
     message.frozenTo = new Date(new Date().getTime() + freezeTime);
     return message;
 }
@@ -19,13 +21,14 @@ export const unfreezeMessage = (message: Message): Message => {
     return message;
 }
 
-export const newMessage = (key: string, value: string): Message => {
+export const newMessage = (key: string, value: string, freezeTime: number): Message => {
     const newId = randomUUID();
     return {
         _id: newId,
         key,
         value,
-        frozenTo: new Date(0)
+        frozenTo: new Date(0),
+        freezeTime
     }
 }
 

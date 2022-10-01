@@ -87,6 +87,7 @@ describe('Basic messages operations', function () {
             expect(message).to.have.property('frozenTo')
             expect(frozenTo).to.be.greaterThan(new Date())
         })
+        //TODO: test custom freezeTimeMin
     });
 
     describe('Delete messages', () => {
