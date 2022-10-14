@@ -10,7 +10,7 @@ export type Message = {
     key: string,
     value: string
     frozenTo: Date,
-    freezeTime: number
+    freezeTimeMin: number
 }
 
 const config = {

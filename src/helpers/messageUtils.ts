@@ -1,4 +1,4 @@
-import config, { Message } from "../config.js";
+import { Message } from "../config.js";
 import { randomUUID } from "crypto";
 
 
@@ -9,9 +9,10 @@ export const isMessageFrozen = (message: Message): boolean => {
 }
 
 export const freezeMessage = (message: Message): Message => {
-    var freezeTime = message.freezeTime * 60_000;
-    freezeTime = Math.max(freezeTime, 1) // 1 min minimum
-    freezeTime = Math.min(freezeTime, 60) // 1 hour maximum
+    const toMS = (minutes: number) => minutes * 60 * 1000;
+    var freezeTime = toMS(message.freezeTimeMin);
+    freezeTime = Math.max(freezeTime, toMS(1)) // 1 min minimum
+    freezeTime = Math.min(freezeTime, toMS(60)) // 1 hour maximum
     message.frozenTo = new Date(new Date().getTime() + freezeTime);
     return message;
 }
@@ -28,7 +29,7 @@ export const newMessage = (key: string, value: string, freezeTime: number): Mess
         key,
         value,
         frozenTo: new Date(0),
-        freezeTime
+        freezeTimeMin: freezeTime
     }
 }
 
