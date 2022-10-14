@@ -104,4 +104,4 @@ dist
 .tern-port
 
 
-resources/known_hosts
+resources/tokens

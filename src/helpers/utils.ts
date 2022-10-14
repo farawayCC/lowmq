@@ -4,10 +4,10 @@ import config, { rootPath } from "../config.js";
 
 
 export const checkDefaults = async () => {
-    // default passwords
-    const pathToKnownHosts = join(rootPath, 'resources', 'known_hosts');
-    if (!fs.existsSync(pathToKnownHosts))
-        fs.writeFileSync(pathToKnownHosts, config.defaultPassword, 'utf-8');
-    else if (fs.readFileSync(pathToKnownHosts, 'utf-8').includes(config.defaultPassword))
-        console.warn('Default password is still in use. Please change it in resources/known_hosts');
+    // default tokens
+    const pathToTokensFile = join(rootPath, 'resources', 'tokens'); pathToTokensFile
+    if (!fs.existsSync(pathToTokensFile))
+        fs.writeFileSync(pathToTokensFile, config.defaultPassword, 'utf-8');
+    else if (fs.readFileSync(pathToTokensFile, 'utf-8').includes(config.defaultPassword))
+        console.warn('Default password is still in use. Please change it in resources/tokens');
 }

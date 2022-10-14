@@ -12,21 +12,21 @@ export const validPassword = (req: Request, res: Response, next: NextFunction) =
     if (authHeader.split(' ').length !== 2)
         return res.status(403).send('Invalid auth header provided');
 
-    const password = authHeader.split(' ')[1];
-    if (!password)
-        return res.status(403).send('No password provided')
+    const token = authHeader.split(' ')[1];
+    if (!token)
+        return res.status(403).send('No token provided')
 
-    // check if password is valid agains the resources/known_hosts file
-    const pathToKnownHosts = join(rootPath, 'resources', 'known_hosts');
-    if (!fs.existsSync(pathToKnownHosts))
-        return res.status(500).send('No known_hosts file found. Contact admin')
+    // check if password is valid agains the resources/tokens file
+    const pathToTokensFile = join(rootPath, 'resources', 'tokens');
+    if (!fs.existsSync(pathToTokensFile))
+        return res.status(500).send('No tokens file found. Contact admin')
 
-    const knownHosts = fs.readFileSync(pathToKnownHosts, 'utf-8');
-    let possibleHosts = knownHosts.split('\n');
-    possibleHosts = possibleHosts.filter((h) => h !== '');
-    const isValid = possibleHosts.includes(password);
+    const tokensFileData = fs.readFileSync(pathToTokensFile, 'utf-8');
+    let approvedTokens = tokensFileData.split('\n');
+    approvedTokens = approvedTokens.filter((h) => h !== '');
+    const isValid = approvedTokens.includes(token);
     if (!isValid)
-        return res.status(403).send('Invalid password provided')
+        return res.status(403).send('Invalid token provided')
 
     next()
 }

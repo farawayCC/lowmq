@@ -1,5 +1,5 @@
 {
-  "name": "wolfmq",
+  "name": "lowmq",
   "version": "0.1.0",
   "main": "index.ts",
   "scripts": {
@@ -9,7 +9,7 @@
     "dev:node": "nodemon dist/index.js",
     "test": "tsc && mocha test/general.js --exit"
   },
-  "repository": "https://github.com/farawayCC/WolfMQ.git",
+  "repository": "https://github.com/farawayCC/lowmq.git",
   "author": "Alexey Klygin <iosdevfarconsoft@gmail.com>",
   "license": "MIT",
   "type": "module",
