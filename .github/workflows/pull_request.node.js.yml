@@ -1,0 +1,58 @@
+
+name: Test on every pull request
+
+on:
+  pull_request:
+    branches: ["main"]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      # --- Basic setup ---
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      # --- Node Section ---
+      - run: npm ci
+
+      - name: Build Project
+        run: npm run build --if-present
+
+      # --- Run tests ---
+      - name: Run general tests
+        run: npm run test
+
+      # --- Save artifacts ---
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+          retention-days: 5
+
+      - name: Remove heavy packets from node_modules folder before uploading them as an artifact
+        run: rm -rf node_modules/typescript node_modules/@types
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: node_modules
+          path: node_modules
+          retention-days: 5
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: resources
+          path: resources
+          retention-days: 5
