@@ -148,3 +148,28 @@ describe('Basic auth', () => {
         expect(response.statusCode).to.equals(401)
     });
 });
+
+describe('Advanced messages operations', () => {
+    const createTestMessage = async (key, value) => {
+        await request(app)
+            .post(route)
+            .set('Authorization', defaultAuthValue)
+            .send({ key: 'test', value: 'test' });
+    }
+
+    before(async () => {
+        clearDB()
+        await createTestMessage('test', 'test0')
+    })
+
+    it('can delete message after reading', async () => {
+        const response = await request(app)
+            .get(route)
+            .set('Authorization', defaultAuthValue)
+            .query({ 'key': 'test', 'deleteAfterRead': true });
+        expect(response.statusCode).to.equals(200)
+        expect(response.body.value).to.equals('test')
+        const messages = JSON.parse(fs.readFileSync(pathToDB, 'utf8')).messages
+        expect(messages).to.not.have.property('test')
+    })
+})
