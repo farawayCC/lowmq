@@ -62,7 +62,7 @@ export const postMessage = async (req: Request, res: Response) => {
         return res.status(400).send('No Value provided in payload for GET message request')
 
     const freezeTime = typeof req.query.freezeTimeMin === 'string'
-        ? parseInt(req.query.freezeTimeMin)
+        ? parseInt(req.query.freezeTimeMin, config.messageFreezeTimeMinutes)
         : config.messageFreezeTimeMinutes
 
     const lowDB = await initLowDB()

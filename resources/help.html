@@ -36,13 +36,16 @@
 
         <li><b>Delete the message</b> with the given ID for the key "test":</li>
         <code>curl -X DELETE -H "Authorization: token woof" "<url></url>/msg?key=test&amp;_id=123456789"</code><br>
-        <small>Please pay attention that you need to provide a valid id which you have received as a response in GET
+        <small>Please pay attention that you need to provide a valid id that you have received as a response in GET
             /msg or
             POST /msg requests</small>
     </ol>
 
     <h2>Advanced Examples</h2>
     <ol>
+        <li>Custom freeze time minutes:</li>
+        <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' "<url></url>/msg?key=test&amp;freezeTimeMin=10"</code><br>
+        <small>Freezes the message for 10 minutes. Default is 5 minutes.</small>
         <li>Get a message and delete it in one request:</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test&amp;delete=true"</code><br>
         <small>This is useful when the processing result of a packet is 100% reliable or under a heavy load.</small>
