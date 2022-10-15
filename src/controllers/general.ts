@@ -41,6 +41,15 @@ export const getMessage = async (req: Request, res: Response) => {
     let msg = activeMessages[msgRandomIndex];
     msg = freezeMessage(msg)
 
+    // Delete the message if query parameter deleteAfterRead is true
+    const toDelete = query.deleteAfterRead === 'true' || query.toDelete === 'true' || query.delete === 'true';
+    if (toDelete) {
+        db.data.messages[qk] = messagesForQuery.filter((m: Message) => m._id !== msg._id)
+        // Remove the key if there are no more messages
+        if (db.data.messages[qk].length === 0)
+            delete db.data.messages[qk]
+    }
+
     await db.write()
     res.send(msg);
 }

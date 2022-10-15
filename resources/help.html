@@ -15,10 +15,10 @@
 
 <body>
     <h1>LowMQ</h1>
-    Simple to use message queue for your projects. Build as a simple REST API with little amount of dependencies.<br>
+    Simple to use message queue for your projects. Build as a simple REST API with a small number of dependencies.<br>
     <h2>API</h2>
     <ul>
-        <li><b>GET</b> /msg?key=</li>
+        <li><b>GET</b> /msg?key=&delete=</li>
         Returns a random message for the given key. Freezes the message for 5 minutes.
         <li><b>POST</b> /msg</li>
         Creates a new message for the given key. Returns the created message.
@@ -39,6 +39,13 @@
         <small>Please pay attention that you need to provide a valid id which you have received as a response in GET
             /msg or
             POST /msg requests</small>
+    </ol>
+
+    <h2>Advanced Examples</h2>
+    <ol>
+        <li>Get a message and delete it in one request:</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test&amp;delete=true"</code><br>
+        <small>This is useful when the processing result of a packet is 100% reliable or under a heavy load.</small>
     </ol>
 </body>
 
