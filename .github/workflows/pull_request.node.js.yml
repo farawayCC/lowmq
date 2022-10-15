@@ -4,6 +4,8 @@ name: Test on every pull request
 on:
   pull_request:
     branches: ["main"]
+  push:
+    branches: ["main"]
 
 
 jobs:
@@ -40,19 +42,4 @@ jobs:
         with:
           name: dist
           path: dist
-          retention-days: 5
-
-      - name: Remove heavy packets from node_modules folder before uploading them as an artifact
-        run: rm -rf node_modules/typescript node_modules/@types
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: node_modules
-          path: node_modules
-          retention-days: 5
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: resources
-          path: resources
           retention-days: 5
