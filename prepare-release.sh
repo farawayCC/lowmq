@@ -43,6 +43,9 @@ fi
 # Create a folder for the release
 mkdir build/Release/$1
 
+# Copy the package.json to the release folder
+cp package.json build/Release/$1
+
 # Copy the build files to the release folder
 cp -R dist build/Release/$1
 
