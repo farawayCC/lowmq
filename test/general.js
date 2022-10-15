@@ -126,3 +126,25 @@ describe('Basic messages operations', function () {
     });
 });
 
+describe('Basic auth', () => {
+    it('can not post a message without auth', async () => {
+        const response = await request(app)
+            .post(route)
+            .send({ key: 'test', value: 'test' });
+        expect(response.statusCode).to.equals(401)
+    });
+
+    it('can not get a message without auth', async () => {
+        const response = await request(app)
+            .get(route)
+            .query({ 'key': 'test' });
+        expect(response.statusCode).to.equals(401)
+    });
+
+    it('can not delete a message without auth', async () => {
+        const response = await request(app)
+            .delete(route)
+            .query({ 'key': 'test' });
+        expect(response.statusCode).to.equals(401)
+    });
+});
