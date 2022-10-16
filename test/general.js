@@ -157,19 +157,47 @@ describe('Advanced messages operations', () => {
             .send({ key: 'test', value: 'test' });
     }
 
-    before(async () => {
-        clearDB()
-        await createTestMessage('test', 'test0')
+    describe('Message deletion', () => {
+        before(async () => {
+            clearDB()
+            await createTestMessage('test', 'test0')
+        })
+
+        it('can delete message after reading', async () => {
+            const response = await request(app)
+                .get(route)
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': 'test', 'deleteAfterRead': true });
+            expect(response.statusCode).to.equals(200)
+            expect(response.body.value).to.equals('test')
+            const messages = JSON.parse(fs.readFileSync(pathToDB, 'utf8')).messages
+            expect(messages).to.not.have.property('test')
+        })
     })
 
-    it('can delete message after reading', async () => {
-        const response = await request(app)
-            .get(route)
-            .set('Authorization', defaultAuthValue)
-            .query({ 'key': 'test', 'deleteAfterRead': true });
-        expect(response.statusCode).to.equals(200)
-        expect(response.body.value).to.equals('test')
-        const messages = JSON.parse(fs.readFileSync(pathToDB, 'utf8')).messages
-        expect(messages).to.not.have.property('test')
+    describe('Freeze time', () => {
+        it('can set custom freeze time', async () => {
+            const freezeTimeMin = 1
+            const responsePost = await request(app)
+                .post(route)
+                .set('Authorization', defaultAuthValue)
+                .query({ 'freezeTimeMin': freezeTimeMin })
+                .send({ key: 'test', value: 'test' });
+            const responseRead = await request(app)
+                .get(route)
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': 'test' });
+            expect(responsePost.statusCode).to.equals(200)
+            expect(responseRead.statusCode).to.equals(200)
+            const messages = JSON.parse(fs.readFileSync(pathToDB, 'utf8')).messages
+            const message = messages.test[messages.test.length - 1]
+            const frozenTo = new Date(message.frozenTo)
+            expect(frozenTo).to.be.greaterThan(new Date())
+            expect(frozenTo).to.be.lessThanOrEqual(new Date(Date.now() + freezeTimeMin * 60 * 1000))
+        })
+    })
+
+    afterEach(() => {
+        clearDB()
     })
 })

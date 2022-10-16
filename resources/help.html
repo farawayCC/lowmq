@@ -44,7 +44,7 @@
     <h2>Advanced Examples</h2>
     <ol>
         <li>Custom freeze time minutes:</li>
-        <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' "<url></url>/msg?key=test&amp;freezeTimeMin=10"</code><br>
+        <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' "<url></url>/msg?freezeTimeMin=10"</code><br>
         <small>Freezes the message for 10 minutes. Default is 5 minutes.</small>
         <li>Get a message and delete it in one request:</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test&amp;delete=true"</code><br>

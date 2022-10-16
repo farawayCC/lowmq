@@ -62,8 +62,11 @@ export const postMessage = async (req: Request, res: Response) => {
         return res.status(400).send('No Value provided in payload for GET message request')
 
     const freezeTime = typeof req.query.freezeTimeMin === 'string'
-        ? parseInt(req.query.freezeTimeMin, config.messageFreezeTimeMinutes)
+        ? parseInt(req.query.freezeTimeMin)
         : config.messageFreezeTimeMinutes
+
+    if (isNaN(freezeTime))
+        return res.status(400).send('Invalid freezeTimeMin provided in query for POST message request')
 
     const lowDB = await initLowDB()
     const dbData = lowDB.data

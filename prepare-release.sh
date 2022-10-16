@@ -26,6 +26,12 @@ if [ -n "$(git status --porcelain)" ]; then
     exit 1
 fi
 
+# Check resources/db.json file is an empty object: {}.
+if [ "$(cat resources/db.json)" != "{}" ]; then
+    echo "The resources/db.json file is not empty. Please empty it."
+    exit 1
+fi 
+
 # Clean install the project.
 npm ci
 
