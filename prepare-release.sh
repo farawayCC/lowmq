@@ -62,9 +62,9 @@ cp -R node_modules build/Release/$1
 cp -R resources build/Release/$1
 
 # Create a zip file for the release
-rm -f build/Release/lowmq-$1.zip
+rm -f build/Release/lowmq.zip
 cd build/Release
-zip -rq lowmq-$1.zip $1
+zip -rq lowmq.zip $1
 
 
 # Regenerate the node_modules folder
