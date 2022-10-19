@@ -126,7 +126,8 @@ export const helpInfo = async (req: Request, res: Response) => {
     try {
         const pathToHelpHTMLFile = join(rootPath, 'resources', 'help.html')
         let helpHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8')
-        helpHTMLContent = helpHTMLContent.replaceAll('Authorization: token woof', `Authorization: token ${config.defaultPassword}`)
+        helpHTMLContent = helpHTMLContent.replace(/'Authorization: token woof'/g,
+            `Authorization: token ${config.defaultPassword}`)
         res.send(helpHTMLContent)
     } catch (error) {
         console.log("🚀 ~ file: general.ts ~ line 123 ~ helpInfo ~ error", error)
