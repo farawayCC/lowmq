@@ -31,3 +31,7 @@ please note that the _id is the id of the message in the queue. You can get it f
 
 ## NodeJS client
 [NPM packet: lowmq-client](https://www.npmjs.com/package/lowmq-client)
+
+
+# TODO
+- [ ] Keys list endpoint
