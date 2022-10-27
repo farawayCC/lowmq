@@ -73,10 +73,11 @@ export const postMessage = async (req: Request, res: Response) => {
     if (!dbData)
         return res.status(500).send('DB not initialized. Contact admin')
 
-    if (!dbData.messages || !dbData.messages[key]) {
+    if (!dbData.messages)
         dbData.messages = {}
+
+    if (!dbData.messages[key])
         dbData.messages[key] = []
-    }
 
     const message = newMessage(key, value, freezeTime)
     dbData.messages[key].push(message)
