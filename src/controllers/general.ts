@@ -54,6 +54,7 @@ export const getMessage = async (req: Request, res: Response) => {
     res.send(msg);
 }
 
+
 export const postMessage = async (req: Request, res: Response) => {
     const { key, value } = req.body
     if (!key)
@@ -86,6 +87,7 @@ export const postMessage = async (req: Request, res: Response) => {
 
     res.send(message);
 }
+
 
 export const deleteMessage = async (req: Request, res: Response) => {
     const query = req.query;
@@ -122,6 +124,29 @@ export const deleteMessage = async (req: Request, res: Response) => {
     await lowDB.write()
     res.send(deletedMessages);
 }
+
+
+/**
+ * Counts the number of messages for each key
+ */
+export const countMessages = async (req: Request, res: Response) => {
+    const lowDB = await initLowDB()
+    const dbData = lowDB.data
+
+    if (!dbData)
+        return res.status(500).send('DB not initialized. Contact admin')
+
+    if (!dbData.messages)
+        return res.status(404).send('No messages found. Messages are empty')
+
+    const counts: { [key: string]: number } = {}
+    Object.keys(dbData.messages).forEach(key => {
+        counts[key] = dbData.messages[key].length
+    })
+
+    res.send(counts);
+}
+
 
 export const helpInfo = async (req: Request, res: Response) => {
     try {

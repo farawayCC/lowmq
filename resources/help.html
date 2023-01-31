@@ -3,7 +3,7 @@
 <head>
     <script>
         window.addEventListener("load", function () {
-            const path = window.location.href.replace('/help', '') // https://rentdota2.com/
+            const path = window.location.href.replace('/help', '')
 
             const toReplace = document.querySelectorAll("url")
             toReplace.forEach(function (element) {
@@ -33,6 +33,10 @@
 
         <li><b>Get a message</b> for the key "test":</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test"</code><br>
+
+        <li><b>Count messages</b> by keys</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg/count"</code><br>
+        <small>Response: {"test": 1}</small>
 
         <li><b>Delete the message</b> with the given ID for the key "test":</li>
         <code>curl -X DELETE -H "Authorization: token woof" "<url></url>/msg?key=test&amp;_id=123456789"</code><br>

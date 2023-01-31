@@ -4,6 +4,7 @@ import {
     getMessage,
     postMessage,
     deleteMessage,
+    countMessages,
     helpInfo
 } from '../controllers/general.js';
 import { validPassword } from '../middleware/general.js';
@@ -15,5 +16,9 @@ router.get('/help', helpInfo);
 router.get('/msg', validPassword, getMessage);
 router.post('/msg', validPassword, postMessage);
 router.delete('/msg', validPassword, deleteMessage);
+
+// endpoint that shows count of messages for each queue
+router.get('/msg/count', validPassword, countMessages);
+
 
 export default router
