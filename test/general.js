@@ -25,6 +25,7 @@ it('Server is up', function (done) {
 });
 
 const route = '/msg'
+const msgName = 'test-message-key'
 
 describe('Basic messages operations', function () {
 
@@ -37,7 +38,6 @@ describe('Basic messages operations', function () {
         var responseReadMsg
         var responseReadAlreadyFetchedMsg
         var responseReadEmptyMsg
-        const msgName = 'test-message-key'
 
         before(async () => {
             responseNewMsg = await request(app)
@@ -90,6 +90,22 @@ describe('Basic messages operations', function () {
         //TODO: test custom freezeTimeMin
     });
 
+    describe('Count messages', () => {
+        var responseCountMsg
+
+        before(async () => {
+            responseCountMsg = await request(app)
+                .get(route + '/count')
+                .set('Authorization', defaultAuthValue);
+        })
+
+        it('can count messages', () => {
+            expect(responseCountMsg.statusCode).to.equals(200)
+            expect(responseCountMsg.body).to.have.property(msgName)
+            expect(responseCountMsg.body[msgName]).to.equals(1)
+        });
+    });
+
     describe('Delete messages', () => {
         const value = {
             'meow': 'Cat',
@@ -98,7 +114,6 @@ describe('Basic messages operations', function () {
         var responseNewMsg
         var responseDeleteMsg
         var responseReadDeletedMsg
-        const msgName = 'test-message-key'
 
         before(async () => {
             clearDB()
