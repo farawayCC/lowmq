@@ -54,7 +54,7 @@ describe('Performance', function () {
         });
 
         after(() => {
-            // clearDB()
+            clearDB()
         });
     });
 });
