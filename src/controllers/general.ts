@@ -4,7 +4,7 @@ import {
     isMessageFrozen,
     newMessage,
 } from '../helpers/messageUtils.js';
-import initLowDB from '../helpers/localDB/index.js';
+import LowDB from '../helpers/localDB/index.js';
 import config, { Message, rootPath } from '../config.js';
 import { join } from 'path'
 import fs from 'fs/promises'
@@ -17,7 +17,7 @@ export const getMessage = async (req: Request, res: Response) => {
         return res.status(400).send('No key provided as query for GET message request');
 
     // init db
-    const db = await initLowDB();
+    const db = await LowDB.getDB();
     if (!db.data)
         return res.status(500).send('DB not initialized');
 
@@ -69,7 +69,7 @@ export const postMessage = async (req: Request, res: Response) => {
     if (isNaN(freezeTime))
         return res.status(400).send('Invalid freezeTimeMin provided in query for POST message request')
 
-    const lowDB = await initLowDB()
+    const lowDB = await LowDB.getDB();
     const dbData = lowDB.data
     if (!dbData)
         return res.status(500).send('DB not initialized. Contact admin')
@@ -99,7 +99,7 @@ export const deleteMessage = async (req: Request, res: Response) => {
     if (!_id)
         return res.status(400).send('No ID provided as query for GET message request')
 
-    const lowDB = await initLowDB()
+    const lowDB = await LowDB.getDB();
     const dbData = lowDB.data
 
     if (!dbData)
@@ -130,7 +130,7 @@ export const deleteMessage = async (req: Request, res: Response) => {
  * Counts the number of messages for each key
  */
 export const countMessages = async (req: Request, res: Response) => {
-    const lowDB = await initLowDB()
+    const lowDB = await LowDB.getDB();
     const dbData = lowDB.data
 
     if (!dbData)
