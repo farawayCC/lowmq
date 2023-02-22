@@ -33,7 +33,7 @@ npm ci
 npm run build
 
 # remove heaviest node_modules
-rm -rf node_modules/typescript node_modules/@types node_modules/mocha node_modules/axios node_modules/superagent node_modules/chai
+rm -rf node_modules/typescript node_modules/@types node_modules/mocha node_modules/superagent node_modules/chai
 
 # Make sure release directory is clean.
 if [ -d "build/Release/lowmq-latest" ]; then

@@ -4,8 +4,6 @@ const expect = chai.expect
 import app from '../dist/app.js'
 import fs from 'fs'
 import path from 'path'
-import crypto from 'crypto'
-import axios from 'axios'
 import * as url from "url";
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -41,11 +39,11 @@ describe('Performance', function () {
 
         before(async function () {
             for (let i = 0; i < n; i++) {
-                const id = await axios.post(
-                    `${host}${route}`,
-                    { key: msgName, value },
-                    { headers: { Authorization: defaultAuthValue } })
-                responses.push(id)
+                const response = await request(app)
+                    .post(route)
+                    .set('Authorization', defaultAuthValue)
+                    .send({ key: msgName, value });
+                responses.push(response)
             }
         })
 
@@ -56,7 +54,7 @@ describe('Performance', function () {
         });
 
         after(() => {
-            clearDB()
+            // clearDB()
         });
     });
 });
