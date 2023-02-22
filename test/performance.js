@@ -49,7 +49,7 @@ describe('Performance', function () {
             }
         })
 
-        it('should have received 100 successful responses', () => {
+        it(`should have received ${n} successful responses`, () => {
             expect(responses.length).to.equal(n)
             for (let response of responses)
                 expect(response.status).to.equal(200)
