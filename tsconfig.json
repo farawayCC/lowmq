@@ -13,6 +13,6 @@
     "outDir": "./dist",
     "resolveJsonModule": true,
     "useUnknownInCatchVariables": false,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
   }
 }
