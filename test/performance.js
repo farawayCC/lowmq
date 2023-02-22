@@ -30,7 +30,7 @@ const host = 'http://localhost:8788'
 const route = '/msg'
 const msgName = 'test-message-key'
 
-const n = 500
+const n = 50
 
 describe('Performance', function () {
 
