@@ -24,10 +24,10 @@ const initLowDB = (): DB => {
     return db
 }
 
-export const clearDB = async (db: DB) => {
+export const clearDB = (db: DB) => {
     if (db.data)
         db.data.messages = {}
-    await db.write()
+    db.write()
 }
 
 

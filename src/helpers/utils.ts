@@ -3,7 +3,7 @@ import { join } from "path";
 import config, { rootPath } from "../config.js";
 
 
-export const checkDefaults = async () => {
+export const checkDefaults = () => {
     // default tokens
     const pathToTokensFile = join(rootPath, 'resources', 'tokens'); pathToTokensFile
     if (!fs.existsSync(pathToTokensFile))
