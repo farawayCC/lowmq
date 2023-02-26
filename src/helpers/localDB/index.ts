@@ -9,10 +9,6 @@ export type DB = {
     data: Data | null
 }
 
-// export type PossibleKeys = 'password-change' |
-//     'password-change-success' |
-//     'password-change-error'
-
 export type Data = {
     messages: {
         [key in string]: Message[]
