@@ -34,35 +34,20 @@ describe('Basic messages operations', function () {
             'meow': 'Cat',
             'woof': 'Dog'
         }
-        var responseNewMsg
-        var responseReadMsg
-        var responseReadAlreadyFetchedMsg
-        var responseReadEmptyMsg
 
-        before(async () => {
-            responseNewMsg = await request(app)
+        it('can post a message', async () => {
+            const responseNewMsg = await request(app)
                 .post(route)
                 .set('Authorization', defaultAuthValue)
                 .send({ key: msgName, value });
-            responseReadMsg = await request(app)
-                .get(route)
-                .set('Authorization', defaultAuthValue)
-                .query({ 'key': msgName });
-            responseReadAlreadyFetchedMsg = await request(app)
-                .get(route)
-                .set('Authorization', defaultAuthValue)
-                .query({ 'key': msgName });
-            responseReadEmptyMsg = await request(app)
-                .get(route)
-                .set('Authorization', defaultAuthValue)
-                .query({ 'key': 'empty' });
-        })
-
-        it('can post a message', () => {
             expect(responseNewMsg.statusCode).to.equals(200)
         });
 
-        it('can get a message', () => {
+        it('can get a message', async () => {
+            const responseReadMsg = await request(app)
+                .get(route)
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': msgName });
             const messageObjectValue = responseReadMsg.body.value
             expect(responseReadMsg.statusCode).to.equals(200)
             expect(messageObjectValue).to.have.property(Object.keys(value)[0])
@@ -71,11 +56,19 @@ describe('Basic messages operations', function () {
             expect(messageObjectValue.woof).to.equals(Object.values(value)[1])
         });
 
-        it('can get a message only once', () => {
+        it('can get a message only once', async () => {
+            const responseReadAlreadyFetchedMsg = await request(app)
+                .get(route)
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': msgName });
             expect(responseReadAlreadyFetchedMsg.statusCode).to.equals(404)
         })
 
-        it('can get an empty message', () => {
+        it('can get an empty message', async () => {
+            const responseReadEmptyMsg = await request(app)
+                .get(route)
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': 'empty' });
             expect(responseReadEmptyMsg.statusCode).to.equals(404)
         })
 
@@ -87,55 +80,43 @@ describe('Basic messages operations', function () {
             expect(message).to.have.property('frozenTo')
             expect(frozenTo).to.be.greaterThan(new Date())
         })
-        //TODO: test custom freezeTimeMin
     });
 
-    describe('Count messages', () => {
-        var responseCountMsg
-
-        before(async () => {
-            responseCountMsg = await request(app)
+    describe('Can count messages', () => {
+        it('can count messages', async () => {
+            const responseCountMsg = await request(app)
                 .get(route + '/count')
                 .set('Authorization', defaultAuthValue);
-        })
-
-        it('can count messages', () => {
             expect(responseCountMsg.statusCode).to.equals(200)
             expect(responseCountMsg.body).to.have.property(msgName)
             expect(responseCountMsg.body[msgName]).to.equals(1)
         });
-    });
+    })
 
     describe('Delete messages', () => {
-        const value = {
-            'meow': 'Cat',
-            'woof': 'Dog'
-        }
-        var responseNewMsg
-        var responseDeleteMsg
-        var responseReadDeletedMsg
+        before(() => clearDB())
 
-        before(async () => {
-            clearDB()
-            responseNewMsg = await request(app)
+        it('can delete a message', async () => {
+            const value = {
+                'meow': 'Cat',
+                'woof': 'Dog'
+            }
+            const responseNewMsg = await request(app)
                 .post(route)
                 .set('Authorization', defaultAuthValue)
                 .send({ key: msgName, value });
-            responseDeleteMsg = await request(app)
+            const responseDeleteMsg = await request(app)
                 .delete(route)
                 .set('Authorization', defaultAuthValue)
                 .query({ '_id': responseNewMsg.body._id, 'key': msgName });
-            responseReadDeletedMsg = await request(app)
-                .get(route)
-                .set('Authorization', defaultAuthValue)
-                .query({ 'key': msgName });
-        })
-
-        it('can delete a message', () => {
             expect(responseDeleteMsg.statusCode).to.equals(200)
         });
 
-        it('can not get a deleted message', () => {
+        it('can not get a deleted message', async () => {
+            const responseReadDeletedMsg = await request(app)
+                .get(route)
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': msgName });
             expect(responseReadDeletedMsg.statusCode).to.equals(404)
         });
     });
@@ -165,17 +146,14 @@ describe('Basic auth', () => {
 });
 
 describe('Advanced messages operations', () => {
-    const createTestMessage = async (key, value) => {
-        await request(app)
-            .post(route)
-            .set('Authorization', defaultAuthValue)
-            .send({ key: 'test', value: 'test' });
-    }
-
     describe('Message deletion', () => {
         before(async () => {
             clearDB()
-            await createTestMessage('test', 'test0')
+            // create test message
+            await request(app)
+                .post(route)
+                .set('Authorization', defaultAuthValue)
+                .send({ key: 'test', value: 'test' });
         })
 
         it('can delete message after reading', async () => {
