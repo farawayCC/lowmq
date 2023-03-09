@@ -1,6 +1,5 @@
 import express from 'express';
 import generalRouter from './router/general.js';
-import authRouter from './router/auth.js';
 import { checkDefaults } from './helpers/utils.js';
 const app = express();
 
@@ -9,7 +8,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('', generalRouter)
-app.use('', authRouter)
 
 checkDefaults();
 
