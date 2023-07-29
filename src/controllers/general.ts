@@ -10,6 +10,19 @@ import { join } from 'path'
 import fs from 'fs/promises'
 
 
+export const getKeys = (req: Request, res: Response) => {
+    const db = LowDB.getDB();
+    if (!db.data)
+        return res.status(500).send('DB not initialized');
+
+    if (!db.data.messages)
+        return res.status(404).send('No messages found');
+
+    const keys = Object.keys(db.data.messages)
+    res.send(keys);
+}
+
+
 export const getMessage = (req: Request, res: Response) => {
     //TODO: add get by _id
     const query = req.query;

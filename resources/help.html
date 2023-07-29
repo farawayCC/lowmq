@@ -50,9 +50,15 @@
         <li>Custom freeze time minutes:</li>
         <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' "<url></url>/msg?freezeTimeMin=10"</code><br>
         <small>Freezes the message for 10 minutes. Default is 5 minutes.</small>
+
         <li>Get a message and delete it in one request:</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test&amp;delete=true"</code><br>
         <small>This is useful when the processing result of a packet is 100% reliable or under a heavy load.</small>
+
+        <li>List all keys in a database:</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/keys"</code><br>
+        <small>Response: ["test"]</small>
+
     </ol>
 </body>
 
