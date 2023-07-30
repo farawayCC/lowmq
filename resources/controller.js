@@ -95,10 +95,19 @@ async function countMessages() {
         });
 }
 
+/**
+ * Converts a token to a hidden format. Does not hide tokens with less than 2 characters.
+ * Hides the token only visually, does not change the actual token.
+ * @param {*} token The token to convert 
+ * @returns The token in C***CC format, limited to 3+3 characters
+ */
 function hideToken(token) {
     if (!token) return
-    if (token.length < 4) return token
-    const leaveCount = 1
-    // leave only first 2 and 1 last chars. Other chars replace with *
-    return token.substring(0, leaveCount) + '*'.repeat(token.length - leaveCount * 2) + token.substring(token.length - 1)
+    if (token.length < 2) return token
+
+    const firstChar = token.charAt(0)
+    const lastChar = token.charAt(token.length - 1)
+    const middle = '***'
+
+    return firstChar + middle + lastChar
 }
