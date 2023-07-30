@@ -32,34 +32,40 @@
             align-items: center;
             justify-content: center;
         }
+
+        .red {
+            color: red;
+        }
+
+        .green {
+            color: green;
+        }
     </style>
 </head>
 
 <body>
     <h1>LowMQ Web Controller</h1>
-    <div class="segment-div">
+    <div id="segment-token" class="segment-div">
         <h3>Token</h3>
         <p id="current-token">Current token: </p>
         <input type="text" id="token" placeholder="Your Token" onsubmit="saveToken">
         <button onclick="saveToken()">Save Token</button>
     </div>
 
-    <!-- <div class="segment-div" id="keys-segment">
-        <h3>Keys in database</h3>
-        <div id="keys"></div>
-    </div> -->
+    <div class="segment-div">
+        <h3>Messages count</h3>
+        <code id="count-msg-result"></code>
+    </div>
 
     <div class="segment-div">
         <h3>Add Message</h3>
         <input type="text" id="add-msg-key" placeholder="Key">
         <input type="text" id="add-msg-value" placeholder="Value">
         <button onclick="addMessage()">Add Message</button>
-        <p id="add-msg-result"></p>
+        <br>
+        <code id="add-msg-result"></code>
     </div>
 
-    <div class="segment-div">
-        <h3>Messages count</h3>
-        <p id="count-msg-result"></p>
 </body>
 
 </html>

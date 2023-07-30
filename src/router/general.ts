@@ -27,5 +27,7 @@ router.delete('/msg', validPassword, deleteMessage);
 // endpoint that shows count of messages for each queue
 router.get('/msg/count', validPassword, countMessages);
 
+router.get('/login/verify', validPassword, (_, res) => res.send('ok'))
+
 
 export default router
