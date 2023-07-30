@@ -6,13 +6,17 @@ import {
     postMessage,
     deleteMessage,
     countMessages,
-    helpInfo
+    helpInfo,
+    controllerHtml,
+    controllerJs,
 } from '../controllers/general.js';
 import { validPassword } from '../middleware/general.js';
 
 
 router.get('', (req, res) => { res.send('All systems online') });
 router.get('/help', helpInfo);
+router.get('/controller', controllerHtml)
+router.get('/controller.js', controllerJs)
 
 router.get('/keys', validPassword, getKeys);
 

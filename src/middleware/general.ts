@@ -9,10 +9,11 @@ export const validPassword = (req: Request, res: Response, next: NextFunction) =
     const authHeader = req.headers.authorization;
     if (!authHeader)
         return res.status(401).send('No auth header provided');
-    if (authHeader.split(' ').length !== 2)
-        return res.status(403).send('Invalid auth header provided');
 
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(' ').length === 2
+        ? authHeader.split(' ')[1]
+        : authHeader.split(' ')[0];
+
     if (!token)
         return res.status(403).send('No token provided')
 

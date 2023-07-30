@@ -94,7 +94,7 @@ describe('Advanced messages operations', () => {
             expect(response.body).to.be.an('array')
             expect(response.body).to.include('test')
             expect(response.body).to.include('kittens')
-            expect(response.body.length).to.not.include('woof')
+            expect(response.body.length).to.equals(2)
         })
     })
 
