@@ -86,8 +86,10 @@ async function countMessages() {
 
     await axios.get(serviceUrl + '/msg/count', { headers: { "authorization": token } })
         .then(response => response.data)
-        .then((count) => {
-            document.getElementById("count-msg-result").innerHTML = JSON.stringify(count, null, 2);
+        .then((countObject) => {
+            const newData = JSON.stringify(countObject, null, 2);
+            if (document.getElementById("count-msg-result").innerHTML != newData)
+                document.getElementById("count-msg-result").innerHTML = newData;
         })
         .catch((error) => {
             console.log('Error on count messages', error)
