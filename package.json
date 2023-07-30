@@ -7,7 +7,10 @@
     "start": "tsc && node dist/index.js",
     "dev:ts": "tsc --watch",
     "dev:node": "nodemon dist/index.js",
-    "test": "tsc && mocha --exit"
+    "test": "tsc && yarn testGeneral && yarn testAdvanced && yarn testPerformance",
+    "testGeneral": "mocha --exit test/general.test.js",
+    "testAdvanced": "mocha --exit test/advanced.test.js",
+    "testPerformance": "mocha --exit test/performance.test.js"
   },
   "repository": "https://github.com/farawayCC/lowmq.git",
   "author": "Alexey Klygin <iosdevfarconsoft@gmail.com>",

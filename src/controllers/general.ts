@@ -10,6 +10,19 @@ import { join } from 'path'
 import fs from 'fs/promises'
 
 
+export const getKeys = (req: Request, res: Response) => {
+    const db = LowDB.getDB();
+    if (!db.data)
+        return res.status(500).send('DB not initialized');
+
+    if (!db.data.messages)
+        return res.status(404).send('No messages found');
+
+    const keys = Object.keys(db.data.messages)
+    res.send(keys);
+}
+
+
 export const getMessage = (req: Request, res: Response) => {
     //TODO: add get by _id
     const query = req.query;
@@ -156,7 +169,27 @@ export const helpInfo = async (req: Request, res: Response) => {
             `Authorization: token ${config.defaultPassword}`)
         res.send(helpHTMLContent)
     } catch (error) {
-        console.log("🚀 ~ file: general.ts ~ line 123 ~ helpInfo ~ error", error)
         res.status(500).send('Error reading help.html file')
+    }
+}
+
+
+export const controllerHtml = async (req: Request, res: Response) => {
+    try {
+        const pathToHelpHTMLFile = join(rootPath, 'resources', 'controller.html')
+        let controllerHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8')
+        res.send(controllerHTMLContent)
+    } catch (error) {
+        res.status(500).send('Error reading controller.html file')
+    }
+}
+
+export const controllerJs = async (req: Request, res: Response) => {
+    try {
+        const pathToHelpHTMLFile = join(rootPath, 'resources', 'controller.js')
+        let helpHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8')
+        res.send(helpHTMLContent)
+    } catch (error) {
+        res.status(500).send('Error reading controller.js file')
     }
 }
