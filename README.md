@@ -34,4 +34,5 @@ please note that the _id is the id of the message in the queue. You can get it f
 
 
 # TODO
-- [ ] Keys list endpoint
+- [X] Keys list endpoint
+- [ ] Add instructions for updating the server + check db and tokens are not rewritten
