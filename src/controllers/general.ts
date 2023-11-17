@@ -193,3 +193,29 @@ export const controllerJs = async (req: Request, res: Response) => {
         res.status(500).send('Error reading controller.js file')
     }
 }
+
+export const freezeMessageController = async (req: Request, res: Response) => {
+    try {
+        const { key, id } = req.query
+        if (!key || typeof key !== 'string' || !id) return res.status(400).send("Invalid key or id")
+
+        const db = LowDB.getDB()
+        db.read()
+
+        if (!db.data) return res.status(500).send("DB is empty")
+
+        const messages = db.data.messages[key]
+        if (!messages) return res.sendStatus(404)
+
+        const index = messages.findIndex(msg => msg._id === id)
+        if (index === -1) return res.status(404).send(`No messages found for _id: ${id}`)
+
+        const frozenMessage = freezeMessage(messages[index])
+        db.data.messages[key][index] = frozenMessage
+        db.write()
+
+        res.json(db.data.messages[key][index])
+    } catch (e) {
+        res.status(500).send((e as Error)?.message || 'Freeze message error')
+    }
+}

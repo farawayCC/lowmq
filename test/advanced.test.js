@@ -69,6 +69,24 @@ describe('Advanced messages operations', () => {
             expect(frozenTo).to.be.greaterThan(new Date())
             expect(frozenTo).to.be.lessThanOrEqual(new Date(Date.now() + freezeTimeMin * 60 * 1000))
         })
+
+        it('can freeze message', async () => {
+            const responsePost = await request(app)
+                .post(route)
+                .set('Authorization', defaultAuthValue)
+                .send({ key: 'test', value: 'test' });
+
+            expect(new Date(responsePost.body.frozenTo)).to.be.lessThan(new Date())
+
+            const responseFreeze = await request(app)
+                .put('/msg/freeze')
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': 'test', 'id': responsePost.body._id })
+                .send()
+
+            expect(responseFreeze.statusCode).to.equals(200)
+            expect(new Date(responseFreeze.body.frozenTo)).to.be.greaterThan(new Date())
+        })
     })
 
     describe('list all keys', async () => {
