@@ -65,4 +65,4 @@ zip -rq lowmq.zip lowmq-latest
 npm ci
 
 # Print that the release is ready
-echo "Release is ready."
+echo "Release is ready. Please upload build/Release/lowmq.zip to the release."
