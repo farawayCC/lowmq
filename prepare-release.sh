@@ -55,6 +55,10 @@ cp -R node_modules build/Release/lowmq-latest
 # Copy resources to the release folder
 cp -R resources build/Release/lowmq-latest
 
+# Rm default files: db and tokens
+rm -rf build/Release/lowmq-latest/resources/db.json
+rm -rf build/Release/lowmq-latest/resources/tokens
+
 # Create a zip file for the release
 rm -f build/Release/lowmq.zip
 cd build/Release
