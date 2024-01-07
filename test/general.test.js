@@ -120,6 +120,39 @@ describe('Basic messages operations', function () {
             expect(responseReadDeletedMsg.statusCode).to.equals(404)
         });
     });
+
+    describe('Update and get messages', () => {
+        before(() => clearDB())
+
+        it('can add, update and get a message', async () => {
+            const newValue = {
+                'meow': 'Cat',
+                'woof': 'Dog',
+                'moo': 'Cow'
+            }
+
+            const responseAddMsg = await request(app)
+                .post(route)
+                .set('Authorization', defaultAuthValue)
+                .send({ key: msgName, value: newValue });
+            expect(responseAddMsg.statusCode).to.equals(200)
+
+            const responseUpdateMsg = await request(app)
+                .put(route)
+                .set('Authorization', defaultAuthValue)
+                .send({ key: msgName, id: responseAddMsg.body._id, newValue });
+            expect(responseUpdateMsg.statusCode).to.equals(200)
+            expect(responseUpdateMsg.body._id).to.equals(responseAddMsg.body._id)
+
+            const responseReadMsg = await request(app)
+                .get(route)
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': msgName });
+
+            const messageObjectValue = responseReadMsg.body.value
+            expect(JSON.stringify(messageObjectValue)).to.equals(JSON.stringify(newValue))
+        })
+    });
 });
 
 describe('Basic auth', () => {

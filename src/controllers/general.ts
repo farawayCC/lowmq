@@ -101,6 +101,41 @@ export const postMessage = (req: Request, res: Response) => {
     res.send(message);
 }
 
+/**
+ * Find and update message. For simplicity, replaces current message value with new one
+ */
+export const updateMessage = (req: Request, res: Response) => {
+    const { key, id, newValue } = req.body
+
+    if (!key)
+        return res.status(400).send('No key provided')
+    if (!id)
+        return res.status(400).send('No id provided')
+    if (!newValue)
+        return res.status(400).send('No newValue provided')
+
+    const lowDB = LowDB.getDB();
+    const dbData = lowDB.data
+    if (!dbData)
+        return res.status(500).send('DB not initialized. Contact admin')
+
+    if (!dbData.messages)
+        dbData.messages = {}
+
+    if (!dbData.messages[key])
+        return res.status(500).send("Collection for key doesn't exist")
+
+    const index = dbData.messages[key].findIndex(msg => msg._id === id)
+    if (index === -1)
+        return res.status(404).send("Message not found")
+
+    dbData.messages[key][index].value = newValue
+
+    lowDB.write()
+
+    res.send(dbData.messages[key][index]);
+}
+
 
 export const deleteMessage = (req: Request, res: Response) => {
     const query = req.query;
@@ -205,7 +240,7 @@ export const freezeMessageController = async (req: Request, res: Response) => {
         if (!db.data) return res.status(500).send("DB is empty")
 
         const messages = db.data.messages[key]
-        if (!messages) return res.sendStatus(404)
+        if (!messages) return res.status(404).send(`No messages found for key: ${key}`)
 
         const index = messages.findIndex(msg => msg._id === id)
         if (index === -1) return res.status(404).send(`No messages found for _id: ${id}`)
