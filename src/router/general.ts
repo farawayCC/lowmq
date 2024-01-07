@@ -4,6 +4,7 @@ import {
     getKeys,
     getMessage,
     postMessage,
+    updateMessage,
     deleteMessage,
     countMessages,
     helpInfo,
@@ -22,6 +23,7 @@ router.get('/controller.js', controllerJs)
 router.get('/keys', validPassword, getKeys);
 
 router.get('/msg', validPassword, getMessage);
+router.put('/msg', validPassword, updateMessage);
 router.post('/msg', validPassword, postMessage);
 router.delete('/msg', validPassword, deleteMessage);
 
