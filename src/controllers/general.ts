@@ -113,10 +113,9 @@ export const updateMessage = (req: Request, res: Response) => {
         return res.status(400).send('No id provided')
     if (!newValue)
         return res.status(400).send('No newValue provided')
-    
+
     const lowDB = LowDB.getDB();
-    console.log('lowDB', lowDB);
-    const dbData = lowDB.data   
+    const dbData = lowDB.data
     if (!dbData)
         return res.status(500).send('DB not initialized. Contact admin')
 
@@ -241,7 +240,7 @@ export const freezeMessageController = async (req: Request, res: Response) => {
         if (!db.data) return res.status(500).send("DB is empty")
 
         const messages = db.data.messages[key]
-        if (!messages) return res.sendStatus(404)
+        if (!messages) return res.status(404).send(`No messages found for key: ${key}`)
 
         const index = messages.findIndex(msg => msg._id === id)
         if (index === -1) return res.status(404).send(`No messages found for _id: ${id}`)
