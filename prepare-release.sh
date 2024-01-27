@@ -47,7 +47,7 @@ mkdir build/Release/lowmq-latest
 cp package.json build/Release/lowmq-latest
 
 # Copy the build files to the release folder
-cp -R dist build/Release/lowmq-latest
+cp -R lowmq.js build/Release/lowmq-latest
 
 # Copy node_modules to the release folder
 cp -R node_modules build/Release/lowmq-latest

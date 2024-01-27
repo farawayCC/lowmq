@@ -3,7 +3,7 @@
   "version": "0.1.7",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "yarn rollup -c",
     "start": "tsc && node dist/index.js",
     "dev:ts": "tsc --watch",
     "dev:node": "nodemon dist/index.js",
@@ -26,6 +26,8 @@
     "chai": "^4.3.6",
     "mocha": "^10.0.0",
     "nodemon": "^2.0.20",
+    "rollup": "^4.9.6",
+    "rollup-plugin-typescript2": "^0.36.0",
     "supertest": "^6.2.4",
     "typescript": "^4.8.3"
   }
