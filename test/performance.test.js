@@ -14,7 +14,6 @@ it('Server is up', function (done) {
     request(app).get('/').expect('All systems online').end(done);
 });
 
-const host = 'http://localhost:8788'
 const route = '/msg'
 const msgName = 'test-message-key'
 
