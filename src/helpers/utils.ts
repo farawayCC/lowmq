@@ -5,7 +5,7 @@ import config, { rootPath } from "../config.js";
 
 export const checkDefaults = () => {
     // Check if tokens file exists
-    const pathToTokensFile = join(rootPath, 'resources', 'tokens'); pathToTokensFile
+    const pathToTokensFile = join(rootPath, 'resources', 'tokens');
     if (!fs.existsSync(pathToTokensFile))
         fs.writeFileSync(pathToTokensFile, config.defaultPassword, 'utf-8');
     // Warn if default password is still in use

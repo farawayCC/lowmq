@@ -32,7 +32,13 @@ const newMessage = (key, value, freezeTime) => {
 };
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-const rootPath = path.join(__dirname, '../');
+const isForTest = path.join(__dirname).includes('dist');
+const rootPath = isForTest ? path.join(__dirname, '..') : path.join(__dirname);
+console.table({
+    rawDirname: path.join(__dirname),
+    rootPath,
+    isForTest
+});
 const config = {
     dbFilePath: path.join(rootPath, 'resources', 'db.json'),
     messageFreezeTimeMinutes: 5,

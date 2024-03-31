@@ -4,13 +4,14 @@
   "main": "index.ts",
   "scripts": {
     "build": "yarn rollup -c",
-    "start": "tsc && node dist/index.js",
-    "dev:ts": "tsc --watch",
-    "dev:node": "nodemon dist/index.js",
-    "test": "tsc && yarn testGeneral && yarn testAdvanced && yarn testPerformance",
+    "start": "yarn build && node lowmq.js",
+    "dev:ts": "yarn rollup -c -w",
+    "dev:node": "nodemon lowmq.js",
+    "test": "tsc && yarn testGeneral && yarn testAdvanced && yarn testPerformance && yarn cleanup",
     "testGeneral": "mocha --exit test/general.test.js",
     "testAdvanced": "mocha --exit test/advanced.test.js",
-    "testPerformance": "mocha --exit test/performance.test.js"
+    "testPerformance": "mocha --exit test/performance.test.js",
+    "cleanup": "rm -rf dist"
   },
   "repository": "https://github.com/farawayCC/lowmq.git",
   "author": "Alexey Klygin <iosdevfarconsoft@gmail.com>",
