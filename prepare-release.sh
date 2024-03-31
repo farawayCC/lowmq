@@ -14,7 +14,7 @@ if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
     exit 1
 fi
 
-# Make sure the working directory is clean.
+# # Make sure the working directory is clean.
 if [ -n "$(git status --porcelain)" ]; then
     echo "The working directory is dirty. Please commit any pending changes."
     exit 1
@@ -32,8 +32,9 @@ npm ci
 # build the project
 npm run build
 
-# remove heaviest node_modules
-rm -rf node_modules/typescript node_modules/@types node_modules/mocha node_modules/superagent node_modules/chai
+# leave only production dependencies
+rm -rf node_modules
+npm install --only=production
 
 # Make sure release directory is clean.
 if [ -d "build/Release/lowmq-latest" ]; then
