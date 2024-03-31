@@ -1,4 +1,3 @@
-
 name: Test on every pull request
 
 on:
@@ -7,14 +6,13 @@ on:
   push:
     branches: ["main"]
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -35,11 +33,3 @@ jobs:
       # --- Run tests ---
       - name: Run general tests
         run: npm run test
-
-      # --- Save artifacts ---
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist
-          retention-days: 5

@@ -3,18 +3,9 @@ import chai from 'chai'
 const expect = chai.expect
 import app from '../dist/app.js'
 import fs from 'fs'
-import path from 'path'
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import { clearDB, defaultAuthValue, pathToDB } from './test.config.js'
 
 
-const defaultAuthValue = 'Basic woof'
-// before all
-const pathToDB = path.join(__dirname, '../', 'resources', 'db.json')
-const clearDB = () => {
-    fs.unlinkSync(pathToDB)
-    fs.writeFileSync(pathToDB, '{}')
-}
 before(function (done) {
     clearDB()
     done()
