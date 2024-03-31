@@ -32,13 +32,11 @@ const newMessage = (key, value, freezeTime) => {
 };
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+// Note: for tests we build the project using tsc, so the root path is different (./dist/), while for the app itself it's the same as __dirname (./lowmq.js)
 const isForTest = path.join(__dirname).includes('dist');
-const rootPath = isForTest ? path.join(__dirname, '..') : path.join(__dirname);
-console.table({
-    rawDirname: path.join(__dirname),
-    rootPath,
-    isForTest
-});
+const rootPath = isForTest
+    ? path.join(__dirname, '..')
+    : path.join(__dirname);
 const config = {
     dbFilePath: path.join(rootPath, 'resources', 'db.json'),
     messageFreezeTimeMinutes: 5,
