@@ -169,6 +169,10 @@ export const deleteMessage = (req: Request, res: Response) => {
 
     const deletedMessages = dbData.messages[key].splice(messageIndex, 1)
 
+    // Remove the key if there are no more messages
+    if (dbData.messages[key].length === 0)
+        delete dbData.messages[key]
+
     lowDB.write()
     res.send(deletedMessages);
 }
