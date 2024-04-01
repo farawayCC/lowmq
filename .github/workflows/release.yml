@@ -48,11 +48,11 @@ jobs:
       - run: cp -R package-lock.json lowmq-latest
       - run: cp -R yarn.lock lowmq-latest
 
-      - run: zip -r lowmq-latest.zip lowmq-latest
+      - run: zip -r lowmq.zip lowmq-latest
 
       # --- Create release ---
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          files: lowmq-latest.zip
+          files: lowmq.zip
           tag_name: latest
