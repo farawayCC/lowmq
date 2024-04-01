@@ -33,13 +33,20 @@ jobs:
         run: rm -rf node_modules
       - run: npm ci --production
 
-      # --- Assemble release ---
-      - run: mkdir lowmq-latest
-      - run: cp -r * lowmq-latest
-
       # --- Cleanup ---
       - name: Cleanup
-        run: rm -rf .github .git resources/db.json src test prepare-release.sh rollup.config.js tsconfig.json .gitignore
+        run: rm -rf resources/db.json
+
+      # --- Assemble release ---
+      - run: mkdir lowmq-latest
+      - run: cp -R node_modules lowmq-latest
+      - run: cp -R resources lowmq-latest
+      - run: cp -R lowmq.js lowmq-latest
+      - run: cp -R LICENSE lowmq-latest
+      - run: cp -R README.md lowmq-latest
+      - run: cp -R package.json lowmq-latest
+      - run: cp -R package-lock.json lowmq-latest
+      - run: cp -R yarn.lock lowmq-latest
 
       # --- Create release ---
       - name: Create release
