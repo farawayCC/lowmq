@@ -1,4 +1,4 @@
-name: Prepare release on merge to main
+name: Create Release on merge to main
 
 on:
   push:
@@ -51,8 +51,15 @@ jobs:
       - run: zip -r lowmq.zip lowmq-latest
 
       # --- Create release ---
+      - name: Get the merge commit message
+        id: get_commit_message
+        run: |
+          commit_message=$(git log --format=%B -n 1)
+          echo "commit_message=${commit_message}" >> $GITHUB_ENV
+
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
+          name: ${{ env.commit_message }}
           files: lowmq.zip
           tag_name: latest
