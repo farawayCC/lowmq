@@ -1,1 +1,65 @@
+<html>
 
+<head>
+    <script>
+        window.addEventListener("load", function () {
+            const path = window.location.href.replace('/help', '')
+
+            const toReplace = document.querySelectorAll("url")
+            toReplace.forEach(function (element) {
+                element.innerHTML = path
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <h1>LowMQ</h1>
+    Simple to use message queue for your projects. Build as a simple REST API with a small number of dependencies.<br>
+    <h2>API</h2>
+    <ul>
+        <li><b>GET</b> /msg?key=&delete=</li>
+        Returns a random message for the given key. Freezes the message for 5 minutes.
+        <li><b>POST</b> /msg</li>
+        Creates a new message for the given key. Returns the created message.
+        <li><b>DELETE</b> /msg?key=&amp;_id=</li>
+        Deletes the message with the given ID for the given key. Returns the deleted message.
+    </ul>
+
+    <h2>Example</h2>
+    <ol>
+        <li>Create a <b>new message</b> for the key "test":</li>
+        <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' <url></url>/msg</code><br>
+
+        <li><b>Get a message</b> for the key "test":</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test"</code><br>
+
+        <li><b>Count messages</b> by keys</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg/count"</code><br>
+        <small>Response: {"test": 1}</small>
+
+        <li><b>Delete the message</b> with the given ID for the key "test":</li>
+        <code>curl -X DELETE -H "Authorization: token woof" "<url></url>/msg?key=test&amp;_id=123456789"</code><br>
+        <small>Please pay attention that you need to provide a valid id that you have received as a response in GET
+            /msg or
+            POST /msg requests</small>
+    </ol>
+
+    <h2>Advanced Examples</h2>
+    <ol>
+        <li>Custom freeze time minutes:</li>
+        <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' "<url></url>/msg?freezeTimeMin=10"</code><br>
+        <small>Freezes the message for 10 minutes. Default is 5 minutes.</small>
+
+        <li>Get a message and delete it in one request:</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test&amp;delete=true"</code><br>
+        <small>This is useful when the processing result of a packet is 100% reliable or under a heavy load.</small>
+
+        <li>List all keys in a database:</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/keys"</code><br>
+        <small>Response: ["test"]</small>
+
+    </ol>
+</body>
+
+</html>
