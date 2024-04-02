@@ -46,7 +46,6 @@ jobs:
       - run: cp -R README.md lowmq-latest
       - run: cp -R package.json lowmq-latest
       - run: cp -R package-lock.json lowmq-latest
-      - run: cp -R yarn.lock lowmq-latest
 
       - run: zip -r lowmq.zip lowmq-latest
 
