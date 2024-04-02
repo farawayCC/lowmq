@@ -183,6 +183,9 @@ const deleteMessage = (req, res) => {
     if (messageIndex === -1)
         return res.status(404).send(`No messages found for _id: ${_id}`);
     const deletedMessages = dbData.messages[key].splice(messageIndex, 1);
+    // Remove the key if there are no more messages
+    if (dbData.messages[key].length === 0)
+        delete dbData.messages[key];
     lowDB.write();
     res.send(deletedMessages);
 };
