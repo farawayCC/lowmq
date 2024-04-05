@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "resources/help.html"
+  workflow_call:
 
 jobs:
   sync-file:
