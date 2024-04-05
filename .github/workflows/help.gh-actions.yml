@@ -6,43 +6,37 @@ on:
       - main
     paths:
       - "resources/help.html"
-  workflow_call:
 
 jobs:
   sync-file:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main branch
-        uses: actions/checkout@v3
-        with:
-          ref: "main"
-
-      - name: Save help.html content
-        run: |
-          mkdir temp
-          cp resources/help.html temp/help.html
-
       - name: Checkout gh-pages branch
         uses: actions/checkout@v3
         with:
           ref: "gh-pages"
-          path: "gh-pages"
+          fetch-depth: 0 # Fetch all history
 
-      - name: Merge main into gh-pages
+      - name: Configure Git
         run: |
-          cd gh-pages
-          git merge origin/main --allow-unrelated-histories -m "Merge main to update help content"
-
-      - name: Update docs/index.html
-        run: |
-          cp temp/help.html gh-pages/docs/index.html
-          cd gh-pages
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+
+      - name: Fetch main branch
+        run: git fetch origin main:main
+
+      - name: Merge main into gh-pages
+        run: git merge main --no-edit --allow-unrelated-histories
+
+      - name: Copy help.html to docs/index.html
+        run: cp resources/help.html docs/index.html
+
+      - name: Commit changes
+        run: |
           git add docs/index.html
           if git diff --staged --quiet; then
-            echo "No changes to commit."
+            echo "No changes to commit, skipping."
           else
-            git commit -m "Update docs/index.html from resources/help.html"
+            git commit -m "Sync help.html content to docs/index.html"
             git push origin gh-pages
           fi
