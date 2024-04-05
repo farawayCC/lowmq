@@ -2,9 +2,16 @@
 
 <head>
     <script>
+        // replace all url placeholders with the current url
         window.addEventListener("load", function () {
             const path = window.location.href.replace('/help', '')
 
+            // remove the last slash
+            if (path.endsWith('/')) {
+                path = path.slice(0, -1)
+            }
+
+            // replace all url placeholders
             const toReplace = document.querySelectorAll("url")
             toReplace.forEach(function (element) {
                 element.innerHTML = path
