@@ -48,8 +48,11 @@ const initLowDB = () => {
     const adapter = new JSONFileSync(config.dbFilePath);
     const db = new LowSync(adapter);
     db.read();
-    if (!db.data)
+    if (!db.data
+        || typeof db.data !== 'object'
+        || typeof db.data.messages !== 'object')
         db.data = { messages: {} };
+    // We checked that db.data is not null
     return db;
 };
 class LowDB {
@@ -58,6 +61,7 @@ class LowDB {
     constructor() {
         this.db = initLowDB();
     }
+    // Returns valid db with .data and .messages
     static getDB() {
         if (!LowDB.instance)
             LowDB.instance = new LowDB();
@@ -79,16 +83,11 @@ const getMessage = (req, res) => {
     const query = req.query;
     if (!query.key)
         return res.status(400).send('No key provided as query for GET message request');
-    // init db
     const db = LowDB.getDB();
-    if (!db.data)
-        return res.status(500).send('DB not initialized');
-    if (!db.data.messages)
-        return res.status(404).send('No messages found');
     // Get messages for query key
     const qk = query.key;
-    const messagesForQuery = db.data.messages[qk] || [];
-    if (messagesForQuery.length === 0)
+    let messagesForQuery = db.data.messages[qk];
+    if (!messagesForQuery || messagesForQuery.length === 0)
         return res.status(404).send('No messages found');
     // Get messages that are not frozen
     const activeMessages = messagesForQuery.filter((m) => !isMessageFrozen(m));
@@ -101,9 +100,9 @@ const getMessage = (req, res) => {
     // Delete the message if query parameter deleteAfterRead is true
     const toDelete = query.deleteAfterRead === 'true' || query.toDelete === 'true' || query.delete === 'true';
     if (toDelete) {
-        db.data.messages[qk] = messagesForQuery.filter((m) => m._id !== msg._id);
+        messagesForQuery = messagesForQuery.filter((m) => m._id !== msg._id);
         // Remove the key if there are no more messages
-        if (db.data.messages[qk].length === 0)
+        if (messagesForQuery.length === 0)
             delete db.data.messages[qk];
     }
     db.write();
@@ -120,17 +119,13 @@ const postMessage = (req, res) => {
         : config.messageFreezeTimeMinutes;
     if (isNaN(freezeTime))
         return res.status(400).send('Invalid freezeTimeMin provided in query for POST message request');
-    const lowDB = LowDB.getDB();
-    const dbData = lowDB.data;
-    if (!dbData)
-        return res.status(500).send('DB not initialized. Contact admin');
-    if (!dbData.messages)
-        dbData.messages = {};
-    if (!dbData.messages[key])
-        dbData.messages[key] = [];
+    const db = LowDB.getDB();
+    const allMessages = db.data.messages;
+    if (!allMessages[key])
+        allMessages[key] = [];
     const message = newMessage(key, value, freezeTime);
-    dbData.messages[key].push(message);
-    lowDB.write();
+    allMessages[key]?.push(message);
+    db.write();
     res.send(message);
 };
 /**
@@ -144,20 +139,20 @@ const updateMessage = (req, res) => {
         return res.status(400).send('No id provided');
     if (!newValue)
         return res.status(400).send('No newValue provided');
-    const lowDB = LowDB.getDB();
-    const dbData = lowDB.data;
-    if (!dbData)
+    const db = LowDB.getDB();
+    if (!db.data)
         return res.status(500).send('DB not initialized. Contact admin');
-    if (!dbData.messages)
-        dbData.messages = {};
-    if (!dbData.messages[key])
+    if (!db.data.messages)
+        db.data.messages = {};
+    const messages = db.data.messages[key];
+    if (!messages)
         return res.status(500).send("Collection for key doesn't exist");
-    const index = dbData.messages[key].findIndex(msg => msg._id === id);
-    if (index === -1)
+    const targetMessage = messages.find(msg => msg._id === id);
+    if (!targetMessage)
         return res.status(404).send("Message not found");
-    dbData.messages[key][index].value = newValue;
-    lowDB.write();
-    res.send(dbData.messages[key][index]);
+    targetMessage.value = newValue;
+    db.write();
+    res.send(targetMessage);
 };
 const deleteMessage = (req, res) => {
     const query = req.query;
@@ -167,42 +162,37 @@ const deleteMessage = (req, res) => {
         return res.status(400).send('No Key provided as query for GET message request');
     if (!_id)
         return res.status(400).send('No ID provided as query for GET message request');
-    const lowDB = LowDB.getDB();
-    const dbData = lowDB.data;
-    if (!dbData)
+    const db = LowDB.getDB();
+    if (!db.data)
         return res.status(500).send('DB not initialized. Contact admin');
-    if (!dbData.messages)
+    if (!db.data.messages)
         return res.status(404).send('No messages found. Messages are empty');
-    if (!dbData.messages[key])
+    const messages = db.data.messages[key];
+    if (!messages)
         return res.status(404).send(`No messages found for key: ${key}`);
     let messageIndex = -1;
-    dbData.messages[key].forEach(message => {
+    messages.forEach(message => {
         if (message._id === _id)
-            messageIndex = dbData.messages[key].indexOf(message);
+            messageIndex = messages.indexOf(message);
     });
     if (messageIndex === -1)
         return res.status(404).send(`No messages found for _id: ${_id}`);
-    const deletedMessages = dbData.messages[key].splice(messageIndex, 1);
+    const deletedMessages = messages.splice(messageIndex, 1);
     // Remove the key if there are no more messages
-    if (dbData.messages[key].length === 0)
-        delete dbData.messages[key];
-    lowDB.write();
+    if (messages.length === 0)
+        delete db.data.messages[key];
+    db.write();
     res.send(deletedMessages);
 };
 /**
  * Counts the number of messages for each key
  */
 const countMessages = (req, res) => {
-    const lowDB = LowDB.getDB();
-    const dbData = lowDB.data;
-    if (!dbData)
-        return res.status(500).send('DB not initialized. Contact admin');
-    if (!dbData.messages)
-        return res.status(404).send('No messages found. Messages are empty');
+    const db = LowDB.getDB();
     const counts = {};
-    Object.keys(dbData.messages).forEach(key => {
-        counts[key] = dbData.messages[key].length;
-    });
+    for (const [key, messages] of Object.entries(db.data.messages)) {
+        counts[key] = messages?.length || 0;
+    }
     res.send(counts);
 };
 const helpInfo = async (req, res) => {
@@ -252,9 +242,9 @@ const freezeMessageController = async (req, res) => {
         if (index === -1)
             return res.status(404).send(`No messages found for _id: ${id}`);
         const frozenMessage = freezeMessage(messages[index]);
-        db.data.messages[key][index] = frozenMessage;
+        messages[index] = frozenMessage;
         db.write();
-        res.json(db.data.messages[key][index]);
+        res.json(messages[index]);
     }
     catch (e) {
         res.status(500).send(e?.message || 'Freeze message error');
