@@ -11,29 +11,37 @@ jobs:
   sync-file:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout main branch
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Fetch all history for all tags and branches
+          ref: "main"
 
-      - name: Setup Git Config
+      - name: Save help.html content
         run: |
+          mkdir temp
+          cp resources/help.html temp/help.html
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v3
+        with:
+          ref: "gh-pages"
+          path: "gh-pages"
+
+      - name: Merge main into gh-pages
+        run: |
+          cd gh-pages
+          git merge origin/main --allow-unrelated-histories -m "Merge main to update help content"
+
+      - name: Update docs/index.html
+        run: |
+          cp temp/help.html gh-pages/docs/index.html
+          cd gh-pages
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-
-      - name: Check for changes
-        id: file_check
-        run: |
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'resources/help.html'; then
-            echo "::set-output name=modified::true"
-          fi
-
-      - name: Copy file to gh-pages branch
-        if: steps.file_check.outputs.modified == 'true'
-        run: |
-          git fetch origin gh-pages:gh-pages
-          git checkout gh-pages
-          cp resources/help.html docs/index.html
           git add docs/index.html
-          git commit -m "Update docs/index.html from resources/help.html"
-          git push origin gh-pages
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update docs/index.html from resources/help.html"
+            git push origin gh-pages
+          fi
