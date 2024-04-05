@@ -4,7 +4,7 @@
     <script>
         // replace all url placeholders with the current url
         window.addEventListener("load", function () {
-            const path = window.location.href.replace('/help', '')
+            let path = window.location.href.replace('/help', '')
 
             // remove the last slash
             if (path.endsWith('/')) {
