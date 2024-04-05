@@ -71,9 +71,9 @@ export const getMessage = (req: Request, res: Response) => {
 export const postMessage = (req: Request, res: Response) => {
     const { key, value } = req.body
     if (!key)
-        return res.status(400).send('No Key provided in payload for GET message request')
+        return res.status(400).send('No key provided in payload for POST message request')
     if (!value)
-        return res.status(400).send('No Value provided in payload for GET message request')
+        return res.status(400).send('No value provided in payload for POST message request')
 
     const freezeTime = typeof req.query.freezeTimeMin === 'string'
         ? parseInt(req.query.freezeTimeMin)
