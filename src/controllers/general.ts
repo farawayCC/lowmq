@@ -143,9 +143,9 @@ export const deleteMessage = (req: Request, res: Response) => {
     const _id: string = query._id as string || query.id as string;
 
     if (!key)
-        return res.status(400).send('No Key provided as query for GET message request')
+        return res.status(400).send('No Key provided in query for DELETE message request')
     if (!_id)
-        return res.status(400).send('No ID provided as query for GET message request')
+        return res.status(400).send('No ID provided in query for DELETE message request')
 
     const lowDB = LowDB.getDB();
     const dbData = lowDB.data
