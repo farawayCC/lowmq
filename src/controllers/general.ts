@@ -29,19 +29,12 @@ export const getMessage = (req: Request, res: Response) => {
     if (!query.key)
         return res.status(400).send('No key provided as query for GET message request');
 
-    // init db
     const db = LowDB.getDB();
-    if (!db.data)
-        return res.status(500).send('DB not initialized');
-
-    if (!db.data.messages)
-        return res.status(404).send('No messages found');
-
 
     // Get messages for query key
     const qk: string = query.key as string;
-    const messagesForQuery = db.data.messages[qk] || []
-    if (messagesForQuery.length === 0)
+    let messagesForQuery = db.data.messages[qk]
+    if (!messagesForQuery || messagesForQuery.length === 0)
         return res.status(404).send('No messages found');
 
     // Get messages that are not frozen
@@ -57,9 +50,9 @@ export const getMessage = (req: Request, res: Response) => {
     // Delete the message if query parameter deleteAfterRead is true
     const toDelete = query.deleteAfterRead === 'true' || query.toDelete === 'true' || query.delete === 'true';
     if (toDelete) {
-        db.data.messages[qk] = messagesForQuery.filter((m: Message) => m._id !== msg._id)
+        messagesForQuery = messagesForQuery.filter((m: Message) => m._id !== msg._id)
         // Remove the key if there are no more messages
-        if (db.data.messages[qk].length === 0)
+        if (messagesForQuery.length === 0)
             delete db.data.messages[qk]
     }
 
@@ -82,21 +75,16 @@ export const postMessage = (req: Request, res: Response) => {
     if (isNaN(freezeTime))
         return res.status(400).send('Invalid freezeTimeMin provided in query for POST message request')
 
-    const lowDB = LowDB.getDB();
-    const dbData = lowDB.data
-    if (!dbData)
-        return res.status(500).send('DB not initialized. Contact admin')
+    const db = LowDB.getDB();
 
-    if (!dbData.messages)
-        dbData.messages = {}
-
-    if (!dbData.messages[key])
-        dbData.messages[key] = []
+    const allMessages = db.data.messages
+    if (!allMessages[key])
+        allMessages[key] = []
 
     const message = newMessage(key, value, freezeTime)
-    dbData.messages[key].push(message)
+    allMessages[key]?.push(message)
 
-    lowDB.write()
+    db.write()
 
     res.send(message);
 }
@@ -114,26 +102,25 @@ export const updateMessage = (req: Request, res: Response) => {
     if (!newValue)
         return res.status(400).send('No newValue provided')
 
-    const lowDB = LowDB.getDB();
-    const dbData = lowDB.data
-    if (!dbData)
+    const db = LowDB.getDB();
+    if (!db.data)
         return res.status(500).send('DB not initialized. Contact admin')
 
-    if (!dbData.messages)
-        dbData.messages = {}
+    if (!db.data.messages)
+        db.data.messages = {}
 
-    if (!dbData.messages[key])
+    const messages = db.data.messages[key]
+    if (!messages)
         return res.status(500).send("Collection for key doesn't exist")
 
-    const index = dbData.messages[key].findIndex(msg => msg._id === id)
-    if (index === -1)
+    const targetMessage = messages.find(msg => msg._id === id)
+    if (!targetMessage)
         return res.status(404).send("Message not found")
+    targetMessage.value = newValue
 
-    dbData.messages[key][index].value = newValue
+    db.write()
 
-    lowDB.write()
-
-    res.send(dbData.messages[key][index]);
+    res.send(targetMessage);
 }
 
 
@@ -147,33 +134,33 @@ export const deleteMessage = (req: Request, res: Response) => {
     if (!_id)
         return res.status(400).send('No ID provided in query for DELETE message request')
 
-    const lowDB = LowDB.getDB();
-    const dbData = lowDB.data
+    const db = LowDB.getDB();
 
-    if (!dbData)
+    if (!db.data)
         return res.status(500).send('DB not initialized. Contact admin')
 
-    if (!dbData.messages)
+    if (!db.data.messages)
         return res.status(404).send('No messages found. Messages are empty')
 
-    if (!dbData.messages[key])
+    const messages = db.data.messages[key]
+    if (!messages)
         return res.status(404).send(`No messages found for key: ${key}`)
 
     let messageIndex = -1
-    dbData.messages[key].forEach(message => {
+    messages.forEach(message => {
         if (message._id === _id)
-            messageIndex = dbData.messages[key].indexOf(message)
+            messageIndex = messages.indexOf(message)
     });
     if (messageIndex === -1)
         return res.status(404).send(`No messages found for _id: ${_id}`)
 
-    const deletedMessages = dbData.messages[key].splice(messageIndex, 1)
+    const deletedMessages = messages.splice(messageIndex, 1)
 
     // Remove the key if there are no more messages
-    if (dbData.messages[key].length === 0)
-        delete dbData.messages[key]
+    if (messages.length === 0)
+        delete db.data.messages[key]
 
-    lowDB.write()
+    db.write()
     res.send(deletedMessages);
 }
 
@@ -182,19 +169,12 @@ export const deleteMessage = (req: Request, res: Response) => {
  * Counts the number of messages for each key
  */
 export const countMessages = (req: Request, res: Response) => {
-    const lowDB = LowDB.getDB();
-    const dbData = lowDB.data
-
-    if (!dbData)
-        return res.status(500).send('DB not initialized. Contact admin')
-
-    if (!dbData.messages)
-        return res.status(404).send('No messages found. Messages are empty')
+    const db = LowDB.getDB();
 
     const counts: { [key: string]: number } = {}
-    Object.keys(dbData.messages).forEach(key => {
-        counts[key] = dbData.messages[key].length
-    })
+    for (const [key, messages] of Object.entries(db.data.messages)) {
+        counts[key] = messages?.length || 0
+    }
 
     res.send(counts);
 }
@@ -250,10 +230,10 @@ export const freezeMessageController = async (req: Request, res: Response) => {
         if (index === -1) return res.status(404).send(`No messages found for _id: ${id}`)
 
         const frozenMessage = freezeMessage(messages[index])
-        db.data.messages[key][index] = frozenMessage
+        messages[index] = frozenMessage
         db.write()
 
-        res.json(db.data.messages[key][index])
+        res.json(messages[index])
     } catch (e) {
         res.status(500).send((e as Error)?.message || 'Freeze message error')
     }

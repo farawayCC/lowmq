@@ -64,8 +64,11 @@ describe('Basic messages operations', function () {
         })
 
         it('can freeze a message', async () => {
+
+
             const db = JSON.parse(fs.readFileSync(pathToDB, 'utf8'))
             const messagesForKey = db.messages[msgName]
+            if (!messagesForKey) throw new Error('No messages exists for key: ' + msgName)
             const message = messagesForKey[messagesForKey.length - 1]
             const frozenTo = new Date(message.frozenTo)
             expect(message).to.have.property('frozenTo')

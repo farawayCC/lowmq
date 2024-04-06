@@ -11,6 +11,7 @@ export const defaultAuthValue = 'Basic woof'
 export const pathToDB = path.join(rootPath, 'resources', 'db.json')
 
 export const clearDB = () => {
+    const defaultDbContent = { messages: {} }
     fs.unlinkSync(pathToDB)
-    fs.writeFileSync(pathToDB, '{}')
+    fs.writeFileSync(pathToDB, JSON.stringify(defaultDbContent))
 }
