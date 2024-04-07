@@ -29,7 +29,7 @@
         Returns a random message for the given key. Freezes the message for 5 minutes.
         <li><b>POST</b> /msg</li>
         Creates a new message for the given key. Returns the created message.
-        <li><b>DELETE</b> /msg?key=&amp;_id=</li>
+        <li><b>DELETE</b> /msg?key=&amp;id=</li>
         Deletes the message with the given ID for the given key. Returns the deleted message.
     </ul>
 
@@ -46,7 +46,7 @@
         <small>Response: {"test": 1}</small>
 
         <li><b>Delete the message</b> with the given ID for the key "test":</li>
-        <code>curl -X DELETE -H "Authorization: token woof" "<url></url>/msg?key=test&amp;_id=123456789"</code><br>
+        <code>curl -X DELETE -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key":"test","id":"ID_HERE"}' "<url></url>/msg"</code><br>
         <small>Please pay attention that you need to provide a valid id that you have received as a response in GET
             /msg or
             POST /msg requests</small>
