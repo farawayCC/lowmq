@@ -1,6 +1,6 @@
 import path from 'path'
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url"
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 
 // Note: for tests we build the project using tsc, so the root path is different (./dist/), while for the app itself it's the same as __dirname (./lowmq.js)

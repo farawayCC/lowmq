@@ -11,8 +11,8 @@ before(function (done) {
 })
 
 it('Server is up', function (done) {
-    request(app).get('/').expect('All systems online').end(done);
-});
+    request(app).get('/').expect('All systems online').end(done)
+})
 
 const route = '/msg'
 const msgName = 'test-message-key'
@@ -31,7 +31,7 @@ describe('Performance', function () {
                 const response = await request(app)
                     .post(route)
                     .set('Authorization', defaultAuthValue)
-                    .send({ key: msgName, value });
+                    .send({ key: msgName, value })
                 responses.push(response)
             }
         })
@@ -40,10 +40,10 @@ describe('Performance', function () {
             expect(responses.length).to.equal(n)
             for (let response of responses)
                 expect(response.status).to.equal(200)
-        });
+        })
 
         after(() => {
             clearDB()
-        });
-    });
-});
+        })
+    })
+})
