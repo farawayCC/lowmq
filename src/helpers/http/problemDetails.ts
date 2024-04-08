@@ -12,6 +12,6 @@ export function sendProblemDetails(
         type,
         title,
         status,
-        detail
+        detail,
     })
 }
