@@ -1,3 +1,4 @@
+import { before, it, describe, afterEach } from 'mocha'
 import request from 'supertest'
 import chai from 'chai'
 const expect = chai.expect
@@ -12,8 +13,8 @@ before(function (done) {
 })
 
 it('Server is up', function (done) {
-    request(app).get('/').expect('All systems online').end(done);
-});
+    request(app).get('/').expect('All systems online').end(done)
+})
 
 const route = '/msg'
 
@@ -25,14 +26,14 @@ describe('Advanced messages operations', () => {
             await request(app)
                 .post(route)
                 .set('Authorization', defaultAuthValue)
-                .send({ key: 'test', value: 'test' });
+                .send({ key: 'test', value: 'test' })
         })
 
         it('can delete message after reading', async () => {
             const response = await request(app)
                 .get(route)
                 .set('Authorization', defaultAuthValue)
-                .query({ 'key': 'test', 'deleteAfterRead': true });
+                .query({ 'key': 'test', 'deleteAfterRead': true })
             expect(response.statusCode).to.equals(200)
             expect(response.body.value).to.equals('test')
             const messages = JSON.parse(fs.readFileSync(pathToDB, 'utf8')).messages
@@ -47,11 +48,11 @@ describe('Advanced messages operations', () => {
                 .post(route)
                 .set('Authorization', defaultAuthValue)
                 .query({ 'freezeTimeMin': freezeTimeMin })
-                .send({ key: 'test', value: 'test' });
+                .send({ key: 'test', value: 'test' })
             const responseRead = await request(app)
                 .get(route)
                 .set('Authorization', defaultAuthValue)
-                .query({ 'key': 'test' });
+                .query({ 'key': 'test' })
             expect(responsePost.statusCode).to.equals(200)
             expect(responseRead.statusCode).to.equals(200)
             const messages = JSON.parse(fs.readFileSync(pathToDB, 'utf8')).messages
@@ -65,7 +66,7 @@ describe('Advanced messages operations', () => {
             const responsePost = await request(app)
                 .post(route)
                 .set('Authorization', defaultAuthValue)
-                .send({ key: 'test', value: 'test' });
+                .send({ key: 'test', value: 'test' })
 
             expect(new Date(responsePost.body.frozenTo)).to.be.lessThan(new Date())
 
@@ -87,11 +88,11 @@ describe('Advanced messages operations', () => {
             await request(app)
                 .post(route)
                 .set('Authorization', defaultAuthValue)
-                .send({ key: 'test', value: 'test' });
+                .send({ key: 'test', value: 'test' })
             await request(app)
                 .post(route)
                 .set('Authorization', defaultAuthValue)
-                .send({ key: 'kittens', value: 'Meow' });
+                .send({ key: 'kittens', value: 'Meow' })
         })
 
         it('can list all keys', async () => {
