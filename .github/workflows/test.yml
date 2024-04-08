@@ -4,10 +4,10 @@ on:
   pull_request:
     branches: ["main"]
   push:
-    branches: ["main"]
+    branches: ["*"]
 
 jobs:
-  build_and_test:
+  build_test_lint:
     runs-on: ubuntu-latest
 
     strategy:
@@ -29,6 +29,9 @@ jobs:
 
       - name: Build Project
         run: npm run build --if-present
+
+      # --- Linting Section ---
+      - run: npm run lint
 
       # --- Run tests ---
       - name: Run general tests
