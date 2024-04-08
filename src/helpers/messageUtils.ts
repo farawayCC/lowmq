@@ -10,7 +10,7 @@ export const isMessageFrozen = (message: Message): boolean => {
 
 export const freezeMessage = (message: Message): Message => {
     const toMS = (minutes: number) => minutes * 60 * 1000
-    var freezeTime = toMS(message.freezeTimeMin)
+    let freezeTime = toMS(message.freezeTimeMin)
     freezeTime = Math.max(freezeTime, toMS(1)) // 1 min minimum
     freezeTime = Math.min(freezeTime, toMS(60)) // 1 hour maximum
     message.frozenTo = new Date(new Date().getTime() + freezeTime)
@@ -29,7 +29,7 @@ export const makeNewMessage = (key: string, value: string, freezeTime: number): 
         key,
         value,
         frozenTo: new Date(0),
-        freezeTimeMin: freezeTime
+        freezeTimeMin: freezeTime,
     }
 }
 

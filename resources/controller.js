@@ -1,29 +1,29 @@
 
 // --- Variables ---
-let token = localStorage.getItem("token");
+let token = localStorage.getItem("token")
 let isTokenLegit = false
 let serviceUrl = window.location.href.replace('/controller', '')
 const defaultOptions = { headers: { "authorization": token } }
 
 // --- Functions invocation---
-main();
+main()
 
 async function main() {
-    await verifyToken();
-    renderToken();
-    await countMessages();
-    setInterval(countMessages, 250);
+    await verifyToken()
+    renderToken()
+    await countMessages()
+    setInterval(countMessages, 250)
 }
 
 // --- Functions ---
 
 async function saveToken() {
-    var tokenFromInput = document.getElementById("token").value;
-    localStorage.setItem("token", tokenFromInput);
-    token = tokenFromInput;
-    defaultOptions.headers.authorization = token;
+    var tokenFromInput = document.getElementById("token").value
+    localStorage.setItem("token", tokenFromInput)
+    token = tokenFromInput
+    defaultOptions.headers.authorization = token
 
-    verifyToken();
+    verifyToken()
 }
 
 async function verifyToken() {
@@ -42,7 +42,7 @@ async function verifyToken() {
 function renderToken() {
     if (!token) return
 
-    document.getElementById("current-token").innerHTML = "Current token: " + hideToken(token);
+    document.getElementById("current-token").innerHTML = "Current token: " + hideToken(token)
 
     if (isTokenLegit) {
         document.getElementById("current-token").classList.remove("red")
@@ -54,12 +54,14 @@ function renderToken() {
 }
 
 
+// Disabling eslint for the following function because it is used in the HTML file
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function addMessage() {
     if (!token) return
     if (!isTokenLegit) return
 
-    const key = document.getElementById("add-msg-key").value;
-    const value = document.getElementById("add-msg-value").value;
+    const key = document.getElementById("add-msg-key").value
+    const value = document.getElementById("add-msg-value").value
 
     await axios.post(
         serviceUrl + '/msg',
@@ -69,13 +71,13 @@ async function addMessage() {
             delete message.headers
             delete message.config
             delete message.request
-            document.getElementById("add-msg-result").innerHTML = 'Response: ' + JSON.stringify(message, null, 2);
-            getKeys();
+            document.getElementById("add-msg-result").innerHTML = 'Response: ' + JSON.stringify(message, null, 2)
+            getKeys()
         })
         .catch((error) => {
             console.log('Error on add message', error)
-            document.getElementById("add-msg-result").innerHTML = "Error adding message: " + error.response.data + " (" + error.response.status + ")";
-        });
+            document.getElementById("add-msg-result").innerHTML = "Error adding message: " + error.response.data + " (" + error.response.status + ")"
+        })
 }
 
 
@@ -87,14 +89,14 @@ async function countMessages() {
     await axios.get(serviceUrl + '/msg/count', { headers: { "authorization": token } })
         .then(response => response.data)
         .then((countObject) => {
-            const newData = JSON.stringify(countObject, null, 2);
+            const newData = JSON.stringify(countObject, null, 2)
             if (document.getElementById("count-msg-result").innerHTML != newData)
-                document.getElementById("count-msg-result").innerHTML = newData;
+                document.getElementById("count-msg-result").innerHTML = newData
         })
         .catch((error) => {
             console.log('Error on count messages', error)
-            document.getElementById("count-msg-result").innerHTML = "Error counting messages: " + error.response.data + " (" + error.response.status + ")";
-        });
+            document.getElementById("count-msg-result").innerHTML = "Error counting messages: " + error.response.data + " (" + error.response.status + ")"
+        })
 }
 
 /**
