@@ -1,6 +1,7 @@
 import fs from "fs"
 import { join } from "path"
 import config, { rootPath } from "../config.js"
+import { makeDefaultDb } from "./localDB/index.js"
 
 
 export const checkDefaults = () => {
@@ -13,7 +14,7 @@ export const checkDefaults = () => {
         console.warn('Default password is still in use. Please change it in resources/tokens')
 
     // Check if db file exists
-    const emptyDB = '{}'
+    const emptyDB = JSON.stringify(makeDefaultDb())
     if (!fs.existsSync(config.dbFilePath))
         fs.writeFileSync(config.dbFilePath, emptyDB, 'utf-8')
 }

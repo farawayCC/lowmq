@@ -1,6 +1,8 @@
 import express from 'express'
 import generalRouter from './router/general.js'
 import { checkDefaults } from './helpers/utils.js'
+import messageRouter from './router/message.js'
+import { sendProblemDetails } from './helpers/http/problemDetails.js'
 const app = express()
 
 
@@ -21,7 +23,11 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use('', generalRouter)
+app.use(generalRouter)
+app.use(messageRouter)
+
+// 404
+app.use((_, res) => sendProblemDetails(res, 'not-found', 404, 'Resource not found', 'The requested resource was not found on this server'))
 
 checkDefaults()
 

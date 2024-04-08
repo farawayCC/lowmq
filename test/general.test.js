@@ -65,8 +65,6 @@ describe('Basic messages operations', function () {
         })
 
         it('can freeze a message', async () => {
-
-
             const db = JSON.parse(fs.readFileSync(pathToDB, 'utf8'))
             const messagesForKey = db.messages[msgName]
             if (!messagesForKey) throw new Error('No messages exists for key: ' + msgName)
@@ -103,7 +101,7 @@ describe('Basic messages operations', function () {
             const responseDeleteMsg = await request(app)
                 .delete(route)
                 .set('Authorization', defaultAuthValue)
-                .query({ '_id': responseNewMsg.body._id, 'key': msgName })
+                .send({ 'id': responseNewMsg.body._id, 'key': msgName })
             expect(responseDeleteMsg.statusCode).to.equals(200)
         })
 
