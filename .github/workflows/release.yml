@@ -53,8 +53,8 @@ jobs:
       - name: Get the merge commit message
         id: get_commit_message
         run: |
-          commit_message=$(git log --format=%B -n 1)
-          echo "commit_message=${commit_message}" >> $GITHUB_ENV
+          commit_message=$(git log --format=%B -n 1 | head -n 1)
+          echo "::set-env name=commit_message::${commit_message}"
 
       - name: Create release
         uses: softprops/action-gh-release@v1
