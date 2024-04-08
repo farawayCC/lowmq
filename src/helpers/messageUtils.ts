@@ -1,5 +1,5 @@
-import { Message } from "../config.js"
-import { randomUUID } from "crypto"
+import { Message } from '../config.js'
+import { randomUUID } from 'crypto'
 
 
 export const isMessageFrozen = (message: Message): boolean => {

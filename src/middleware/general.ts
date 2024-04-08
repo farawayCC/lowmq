@@ -1,8 +1,8 @@
-import fs from "fs"
-import { join } from "path"
-import { rootPath } from "../config.js"
-import { NextFunction, Request, Response } from "express"
-import { sendProblemDetails } from "../helpers/http/problemDetails.js"
+import fs from 'fs'
+import { join } from 'path'
+import { rootPath } from '../config.js'
+import { NextFunction, Request, Response } from 'express'
+import { sendProblemDetails } from '../helpers/http/problemDetails.js'
 
 
 export const validPassword = (req: Request, res: Response, next: NextFunction) => {
