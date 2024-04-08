@@ -73,8 +73,7 @@ describe('Advanced messages operations', () => {
             const responseFreeze = await request(app)
                 .put('/msg/freeze')
                 .set('Authorization', defaultAuthValue)
-                .query({ 'key': 'test', 'id': responsePost.body._id })
-                .send()
+                .send({ 'key': 'test', 'id': responsePost.body._id })
 
             expect(responseFreeze.statusCode).to.equals(200)
             expect(new Date(responseFreeze.body.frozenTo)).to.be.greaterThan(new Date())
@@ -84,7 +83,6 @@ describe('Advanced messages operations', () => {
     describe('list all keys', async () => {
         before(async () => {
             clearDB()
-            // create test message
             await request(app)
                 .post(route)
                 .set('Authorization', defaultAuthValue)

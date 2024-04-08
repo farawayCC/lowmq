@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import * as url from "url"
 
-const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url))
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const rootPath = path.join(__dirname, '..')
 
 

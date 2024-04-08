@@ -1,4 +1,3 @@
-// const lowdb = import('lowdb')
 import { JSONFileSync, LowSync } from 'lowdb'
 import config, { Message } from '../../config.js'
 
@@ -15,6 +14,8 @@ export type Data = {
     }
 }
 
+export const makeDefaultDb = (): Data => ({ messages: {} })
+
 const initLowDB = (): DB => {
     const adapter = new JSONFileSync<Data>(config.dbFilePath)
     const db = new LowSync(adapter)
@@ -23,7 +24,7 @@ const initLowDB = (): DB => {
     if (!db.data
         || typeof db.data !== 'object'
         || typeof db.data.messages !== 'object')
-        db.data = { messages: {} }
+        db.data = makeDefaultDb()
     // We checked that db.data is not null
     return db as DB
 }

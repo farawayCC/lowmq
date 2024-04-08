@@ -22,7 +22,7 @@ export const unfreezeMessage = (message: Message): Message => {
     return message
 }
 
-export const newMessage = (key: string, value: string, freezeTime: number): Message => {
+export const makeNewMessage = (key: string, value: string, freezeTime: number): Message => {
     const newId = randomUUID()
     return {
         _id: newId,
