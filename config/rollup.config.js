@@ -8,6 +8,6 @@ export default {
         format: 'es',
     },
     plugins: [
-        typescript(),
+        typescript({ tsconfig: 'config/tsconfig.json' }),
     ],
 }
