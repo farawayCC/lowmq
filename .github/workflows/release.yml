@@ -3,11 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - '**' # This will trigger the workflow for pushes to any branch
+      - "**" # This will trigger the workflow for pushes to any branch
   pull_request:
     branches:
-      - '**' # This will trigger the workflow for pull requests to any branch
-
+      - "**" # This will trigger the workflow for pull requests to any branch
 
 jobs:
   build_test_lint:
@@ -39,7 +38,6 @@ jobs:
       - name: Run general tests
         run: npm run test
 
-
   release:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -47,7 +45,7 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
-        
+
     steps:
       # --- Basic setup ---
       - uses: actions/checkout@v3
@@ -74,13 +72,14 @@ jobs:
 
       # --- Assemble release ---
       - run: mkdir lowmq-latest
-      - run: cp -R node_modules lowmq-latest
       - run: cp -R resources lowmq-latest
       - run: cp -R lowmq.js lowmq-latest
-      - run: cp -R LICENSE lowmq-latest
-      - run: cp -R README.md lowmq-latest
+      - run: cp -R config/pm2.config.cjs lowmq-latest
       - run: cp -R package.json lowmq-latest
       - run: cp -R package-lock.json lowmq-latest
+      - run: cp -R node_modules lowmq-latest
+      - run: cp -R LICENSE lowmq-latest
+      - run: cp -R README.md lowmq-latest
 
       - run: zip -r lowmq.zip lowmq-latest
 

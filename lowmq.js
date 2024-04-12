@@ -16,7 +16,7 @@ const rootPath = isForTest
 const config = {
     dbFilePath: path.join(rootPath, 'resources', 'db.json'),
     messageFreezeTimeMinutes: 5,
-    defaultPassword: 'woof'
+    defaultPassword: 'woof',
 };
 
 /** Utility function to send RFC 9457 compliant error responses */
@@ -25,7 +25,7 @@ function sendProblemDetails(res, type, status, title, detail) {
         type,
         title,
         status,
-        detail
+        detail,
     });
 }
 
@@ -43,7 +43,7 @@ const helpInfo = async (_, res) => {
 const controllerHtml = async (_, res) => {
     try {
         const pathToHelpHTMLFile = join(rootPath, 'resources', 'controller.html');
-        let controllerHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8');
+        const controllerHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8');
         res.send(controllerHTMLContent);
     }
     catch (error) {
@@ -53,7 +53,7 @@ const controllerHtml = async (_, res) => {
 const controllerJs = async (_, res) => {
     try {
         const pathToHelpHTMLFile = join(rootPath, 'resources', 'controller.js');
-        let helpHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8');
+        const helpHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8');
         res.send(helpHTMLContent);
     }
     catch (error) {
@@ -102,6 +102,7 @@ const initLowDB = () => {
     return db;
 };
 class LowDB {
+    // eslint-disable-next-line no-use-before-define
     static instance;
     db;
     constructor() {
@@ -136,7 +137,7 @@ const isMessageFrozen = (message) => {
 };
 const freezeMessage$1 = (message) => {
     const toMS = (minutes) => minutes * 60 * 1000;
-    var freezeTime = toMS(message.freezeTimeMin);
+    let freezeTime = toMS(message.freezeTimeMin);
     freezeTime = Math.max(freezeTime, toMS(1)); // 1 min minimum
     freezeTime = Math.min(freezeTime, toMS(60)); // 1 hour maximum
     message.frozenTo = new Date(new Date().getTime() + freezeTime);
@@ -149,7 +150,7 @@ const makeNewMessage = (key, value, freezeTime) => {
         key,
         value,
         frozenTo: new Date(0),
-        freezeTimeMin: freezeTime
+        freezeTimeMin: freezeTime,
     };
 };
 
