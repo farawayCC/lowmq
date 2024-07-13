@@ -65,7 +65,17 @@
         <li>List all keys in a database:</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/keys"</code><br>
         <small>Response: ["test"]</small>
+    </ol>
 
+    <h2>Miscellaneous</h2>
+    <ol>
+        <li>Token Verification:</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/login/verify"</code><br>
+        <small>Response: ok</small>
+
+        <li>Lowmq Version</li>
+        <code>curl -X GET "<url></url>/version"</code><br>
+        <small>Response: 0.1.2</small>
     </ol>
 </body>
 
