@@ -40,6 +40,16 @@ const helpInfo = async (_, res) => {
         sendProblemDetails(res, 'file-read-error', 500, 'Error reading help.html file', error?.message);
     }
 };
+const version = async (_, res) => {
+    try {
+        const packageFile = await fs.readFile(join(rootPath, 'package.json'), 'utf-8');
+        const packageJson = JSON.parse(packageFile);
+        res.json(packageJson.version);
+    }
+    catch (error) {
+        sendProblemDetails(res, 'file-read-error', 500, 'Error reading package.json file', error?.message);
+    }
+};
 const controllerHtml = async (_, res) => {
     try {
         const pathToHelpHTMLFile = join(rootPath, 'resources', 'controller.html');
@@ -85,6 +95,7 @@ const validPassword = (req, res, next) => {
 const generalRouter = express.Router();
 generalRouter.get('', (_, res) => { res.send('All systems online'); });
 generalRouter.get('/help', helpInfo);
+generalRouter.get('/version', version);
 generalRouter.get('/controller', controllerHtml);
 generalRouter.get('/controller.js', controllerJs);
 generalRouter.get('/login/verify', validPassword, (_, res) => res.send('ok'));
@@ -246,6 +257,23 @@ const freezeMessage = (req, res) => {
     db.write();
     res.send(frozenMessage);
 };
+const unfreezeMessage = (req, res) => {
+    const { key, id } = req.body;
+    if (typeof id !== 'string')
+        return sendProblemDetails(res, ProblemDetailsTypes.invaildPayload, 400, 'Invalid payload', 'Expected string id in payload, got: ' + id);
+    if (typeof key !== 'string')
+        return sendProblemDetails(res, ProblemDetailsTypes.invaildPayload, 400, 'Invalid payload', 'Expected string key in payload, got: ' + key);
+    const db = LowDB.getDB();
+    const messages = db.data.messages;
+    if (!messages[key])
+        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
+    const message = messages[key]?.find(m => m._id === id);
+    if (!message)
+        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
+    message.frozenTo = new Date(0);
+    db.write();
+    res.send(message);
+};
 const deleteMessage = (req, res) => {
     const { key, id } = req.body;
     if (typeof id !== 'string')
@@ -280,6 +308,7 @@ messageRouter.put('/msg', updateMessage);
 messageRouter.post('/msg', postMessage);
 messageRouter.delete('/msg', deleteMessage);
 messageRouter.put('/msg/freeze', freezeMessage);
+messageRouter.put('/msg/unfreeze', unfreezeMessage);
 messageRouter.get('/msg/count', countMessages);
 
 const app = express();

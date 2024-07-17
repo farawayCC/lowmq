@@ -106,6 +106,32 @@ describe('Advanced messages operations', () => {
         })
     })
 
+    describe('unfreeze message', async () => {
+        let message
+        before(async () => {
+            clearDB()
+            // create test message
+            await request(app)
+                .post(route)
+                .set('Authorization', defaultAuthValue)
+                .send({ key: 'test', value: 'test' })
+            // freeze message by reading it
+            message = await request(app)
+                .get('/msg')
+                .set('Authorization', defaultAuthValue)
+                .query({ 'key': 'test' })
+        })
+
+        it('can unfreeze message', async () => {
+            const response = await request(app)
+                .put('/msg/unfreeze')
+                .set('Authorization', defaultAuthValue)
+                .send({ 'key': 'test', 'id': message.body._id })
+            expect(response.statusCode).to.equals(200)
+            expect(new Date(response.body.frozenTo)).to.be.lessThan(new Date())
+        })
+    })
+
     afterEach(() => {
         clearDB()
     })

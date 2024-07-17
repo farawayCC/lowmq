@@ -139,6 +139,32 @@ export const freezeMessage = (req: Request, res: Response) => {
     res.send(frozenMessage)
 }
 
+export const unfreezeMessage = (req: Request, res: Response) => {
+    const { key, id } = req.body
+    if (typeof id !== 'string')
+        return sendProblemDetails(res, ProblemDetailsTypes.invaildPayload, 400, 'Invalid payload',
+            'Expected string id in payload, got: ' + id)
+    if (typeof key !== 'string')
+        return sendProblemDetails(res, ProblemDetailsTypes.invaildPayload, 400, 'Invalid payload',
+            'Expected string key in payload, got: ' + key)
+
+    const db = LowDB.getDB()
+    const messages = db.data.messages
+
+    if (!messages[key])
+        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found',
+            'No messages found for key: ' + key)
+
+    const message = messages[key]?.find(m => m._id === id)
+    if (!message)
+        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found',
+            'No message found with id: ' + id)
+
+    message.frozenTo = new Date(0)
+    db.write()
+    res.send(message)
+}
+
 export const deleteMessage = (req: Request, res: Response) => {
     const { key, id } = req.body
     if (typeof id !== 'string')
