@@ -1,6 +1,6 @@
 {
   "name": "lowmq",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "main": "index.ts",
   "scripts": {
     "build": "rollup -c ./config/rollup.config.js",
