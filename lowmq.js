@@ -217,7 +217,7 @@ const postMessage = (req, res) => {
     if (!messages[key])
         messages[key] = [];
     const newMessage = makeNewMessage(key, value, freezeTime);
-    messages[key]?.push(newMessage);
+    messages[key].push(newMessage);
     db.write();
     res.send(newMessage);
 };
@@ -233,7 +233,7 @@ const updateMessage = (req, res) => {
     const messages = db.data.messages;
     if (!messages[key])
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
-    const message = messages[key]?.find(m => m._id === id);
+    const message = messages[key].find(m => m._id === id);
     if (!message)
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
     message.value = newValue;
@@ -250,7 +250,7 @@ const freezeMessage = (req, res) => {
     const messages = db.data.messages;
     if (!messages[key])
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
-    const message = messages[key]?.find(m => m._id === id);
+    const message = messages[key].find(m => m._id === id);
     if (!message)
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
     const frozenMessage = freezeMessage$1(message);
@@ -258,18 +258,32 @@ const freezeMessage = (req, res) => {
     res.send(frozenMessage);
 };
 const unfreezeMessage = (req, res) => {
-    const { key, id } = req.body;
-    if (typeof id !== 'string')
-        return sendProblemDetails(res, ProblemDetailsTypes.invaildPayload, 400, 'Invalid payload', 'Expected string id in payload, got: ' + id);
+    const { key, id, all } = req.body;
     if (typeof key !== 'string')
         return sendProblemDetails(res, ProblemDetailsTypes.invaildPayload, 400, 'Invalid payload', 'Expected string key in payload, got: ' + key);
     const db = LowDB.getDB();
     const messages = db.data.messages;
     if (!messages[key])
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
-    const message = messages[key]?.find(m => m._id === id);
-    if (!message)
-        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
+    let message;
+    if (typeof id === 'string') {
+        // Unfreeze a specific message
+        message = messages[key].find(m => m._id === id);
+        if (!message)
+            return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
+    }
+    else if (all === true || all === 'true') {
+        // Unfreeze all messages for key
+        messages[key].forEach(m => m.frozenTo = new Date(0));
+        message = messages[key][0]; // Hacky way to return a message
+    }
+    else {
+        // Unfreeze first message
+        const frozenMessages = messages[key].filter(m => isMessageFrozen(m));
+        if (frozenMessages.length === 0)
+            return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No active messages', 'No active messages found for key: ' + key);
+        message = frozenMessages[0];
+    }
     message.frozenTo = new Date(0);
     db.write();
     res.send(message);
@@ -284,10 +298,10 @@ const deleteMessage = (req, res) => {
     const messages = db.data.messages;
     if (!messages[key])
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
-    const messageIndex = messages[key]?.findIndex(m => m._id === id) || -1;
+    const messageIndex = messages[key].findIndex(m => m._id === id);
     if (messageIndex === -1)
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
-    const deletedMessage = messages[key]?.splice(messageIndex, 1)[0];
+    const deletedMessage = messages[key].splice(messageIndex, 1)[0];
     db.write();
     res.send(deletedMessage);
 };
@@ -333,6 +347,7 @@ const PORT = process.env.PORT || 8788;
 app.listen(PORT, () => {
     console.log(`LowMQ started with url: http://localhost:${PORT}`);
     console.log(`Basic tutorial and api reference: http://localhost:${PORT}/help`);
+    console.log(`Some basic controls: http://localhost:${PORT}/controller`);
 });
 
 http.createServer(app);
