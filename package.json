@@ -6,7 +6,7 @@
     "build": "rollup -c ./config/rollup.config.js",
     "start": "npm run build && node lowmq.js",
     "dev:ts": "rollup -c ./config/rollup.config.js -w",
-    "dev:js": "nodemon lowmq.js",
+    "dev:js": "nodemon lowmq.js --watch lowmq.js",
     "test": "tsc --project config/tsconfig.json && npm run testGeneral && npm run testAdvanced && npm run testPerformance && npm run cleanup",
     "testGeneral": "mocha --exit test/general.test.js",
     "testAdvanced": "mocha --exit test/advanced.test.js",
