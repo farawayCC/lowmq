@@ -24,7 +24,7 @@ describe('Basic messages operations', function () {
     describe('Post and Get new messages', () => {
         const value = {
             'meow': 'Cat',
-            'woof': 'Dog'
+            'woof': 'Dog',
         }
 
         it('can post a message', async () => {
@@ -92,7 +92,7 @@ describe('Basic messages operations', function () {
         it('can delete a message', async () => {
             const value = {
                 'meow': 'Cat',
-                'woof': 'Dog'
+                'woof': 'Dog',
             }
             const responseNewMsg = await request(app)
                 .post(route)
@@ -121,7 +121,7 @@ describe('Basic messages operations', function () {
             const newValue = {
                 'meow': 'Cat',
                 'woof': 'Dog',
-                'moo': 'Cow'
+                'moo': 'Cow',
             }
 
             const responseAddMsg = await request(app)
