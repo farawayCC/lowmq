@@ -181,12 +181,12 @@ export const deleteMessage = (req: Request, res: Response) => {
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found',
             'No messages found for key: ' + key)
 
-    const messageIndex = messages[key]?.findIndex(m => m._id === id) || -1
+    const messageIndex = messages[key].findIndex(m => m._id === id)
     if (messageIndex === -1)
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found',
             'No message found with id: ' + id)
 
-    const deletedMessage = messages[key]?.splice(messageIndex, 1)[0]
+    const deletedMessage = messages[key].splice(messageIndex, 1)[0]
     db.write()
     res.send(deletedMessage)
 }
