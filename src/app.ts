@@ -35,6 +35,7 @@ const PORT = process.env.PORT || 8788
 app.listen(PORT, () => {
     console.log(`LowMQ started with url: http://localhost:${PORT}`)
     console.log(`Basic tutorial and api reference: http://localhost:${PORT}/help`)
+    console.log(`Some basic controls: http://localhost:${PORT}/controller`)
 })
 
 export default app
