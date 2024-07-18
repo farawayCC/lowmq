@@ -3,16 +3,16 @@
   "version": "0.1.8",
   "main": "index.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c ./config/rollup.config.js",
     "start": "npm run build && node lowmq.js",
-    "dev:ts": "rollup -c -w",
-    "dev:node": "nodemon lowmq.js",
-    "test": "tsc && npm run testGeneral && npm run testAdvanced && npm run testPerformance && npm run cleanup",
+    "dev:ts": "rollup -c ./config/rollup.config.js -w",
+    "dev:js": "nodemon lowmq.js --watch lowmq.js",
+    "test": "tsc --project config/tsconfig.json && npm run testGeneral && npm run testAdvanced && npm run testPerformance && npm run cleanup",
     "testGeneral": "mocha --exit test/general.test.js",
     "testAdvanced": "mocha --exit test/advanced.test.js",
     "testPerformance": "mocha --exit test/performance.test.js",
     "cleanup": "rm -rf dist",
-    "lint": "eslint src"
+    "lint": "eslint -c ./config/.eslintrc.cjs src"
   },
   "repository": "https://github.com/farawayCC/lowmq.git",
   "author": "Alexey Klygin <iosdevfarconsoft@gmail.com>",
@@ -36,6 +36,6 @@
     "rollup": "^4.9.6",
     "rollup-plugin-typescript2": "^0.36.0",
     "supertest": "^6.2.4",
-    "typescript": "^4.9.5"
+    "typescript": "^5.5.3"
   }
 }

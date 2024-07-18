@@ -106,7 +106,97 @@ describe('Advanced messages operations', () => {
         })
     })
 
-    afterEach(() => {
-        clearDB()
+    describe('unfreeze', async () => {
+        describe('unfreeze message by id', async () => {
+            let message
+            before(async () => {
+                clearDB()
+                // create test message
+                await request(app)
+                    .post(route)
+                    .set('Authorization', defaultAuthValue)
+                    .send({ key: 'test', value: 'test' })
+                // freeze message by reading it
+                message = await request(app)
+                    .get('/msg')
+                    .set('Authorization', defaultAuthValue)
+                    .query({ 'key': 'test' })
+            })
+
+            it('can unfreeze message by id', async () => {
+                const response = await request(app)
+                    .put('/msg/unfreeze')
+                    .set('Authorization', defaultAuthValue)
+                    .send({ 'key': 'test', 'id': message.body._id })
+                expect(response.statusCode).to.equals(200)
+                expect(new Date(response.body.frozenTo)).to.be.lessThan(new Date())
+            })
+        })
+
+        describe('unfreeze one message by key', async () => {
+            before(async () => {
+                clearDB()
+                // create test message
+                await request(app)
+                    .post(route)
+                    .set('Authorization', defaultAuthValue)
+                    .send({ key: 'test', value: 'test' })
+                // freeze message by reading it
+                await request(app)
+                    .get('/msg')
+                    .set('Authorization', defaultAuthValue)
+                    .query({ 'key': 'test' })
+            })
+
+            it('can unfreeze one message by key', async () => {
+                const response = await request(app)
+                    .put('/msg/unfreeze')
+                    .set('Authorization', defaultAuthValue)
+                    .send({ 'key': 'test' })
+                expect(response.statusCode).to.equals(200)
+                expect(new Date(response.body.frozenTo)).to.be.lessThan(new Date())
+            })
+        })
+
+        describe('unfreeze all messages by key', async () => {
+            before(async () => {
+                clearDB()
+                // create test messages
+                await request(app)
+                    .post(route)
+                    .set('Authorization', defaultAuthValue)
+                    .send({ key: 'test', value: 'test' })
+                await request(app)
+                    .post(route)
+                    .set('Authorization', defaultAuthValue)
+                    .send({ key: 'test', value: 'test' })
+                // freeze message by reading them
+                await request(app)
+                    .get('/msg')
+                    .set('Authorization', defaultAuthValue)
+                    .query({ 'key': 'test' })
+                await request(app)
+                    .get('/msg')
+                    .set('Authorization', defaultAuthValue)
+                    .query({ 'key': 'test' })
+            })
+
+            it('can unfreeze all messages by key', async () => {
+                const response = await request(app)
+                    .put('/msg/unfreeze')
+                    .set('Authorization', defaultAuthValue)
+                    .send({ 'key': 'test', 'all': true })
+                expect(response.statusCode).to.equals(200)
+
+                const messages = JSON.parse(fs.readFileSync(pathToDB, 'utf8')).messages
+                messages.test.forEach(message => {
+                    expect(new Date(message.frozenTo)).to.be.lessThan(new Date())
+                })
+            })
+
+            afterEach(() => {
+                clearDB()
+            })
+        })
     })
 })

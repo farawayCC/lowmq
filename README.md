@@ -32,6 +32,9 @@ please note that the _id is the id of the message in the queue. You can get it f
 ## NodeJS client
 [NPM packet: lowmq-client](https://www.npmjs.com/package/lowmq-client)
 
+## Python client
+[Python packet: lowmq-client](https://pypi.org/project/lowmq-client)
+
 # Project Structure
 - `src/`: This directory contains the TypeScript source code of the application. The entry point of the application is index.ts.
 

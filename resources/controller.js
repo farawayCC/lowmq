@@ -13,6 +13,7 @@ async function main() {
     renderToken()
     await countMessages()
     setInterval(countMessages, 250)
+    await receiveVersion()
 }
 
 // --- Functions ---
@@ -53,6 +54,18 @@ function renderToken() {
     }
 }
 
+async function receiveVersion() {
+    await axios.get(serviceUrl + '/version', defaultOptions)
+        .then(response => response.data)
+        .then((version) => {
+            document.getElementById("version").innerHTML = "Version: " + version
+        })
+        .catch((error) => {
+            console.log('Error on receive version', error)
+            document.getElementById("version").innerHTML = "Error receiving version: " + error.response.data + " (" + error.response.status + ")"
+        })
+}
+
 
 // Disabling eslint for the following function because it is used in the HTML file
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,6 +90,24 @@ async function addMessage() {
         .catch((error) => {
             console.log('Error on add message', error)
             document.getElementById("add-msg-result").innerHTML = "Error adding message: " + error.response.data + " (" + error.response.status + ")"
+        })
+}
+
+
+async function getMessage() {
+    if (!token) return
+    if (!isTokenLegit) return
+
+    const key = document.getElementById("get-msg-key").value
+
+    await axios.get(serviceUrl + '/msg', { headers: { "authorization": token }, params: { key: key } })
+        .then(response => response.data)
+        .then((message) => {
+            document.getElementById("get-msg-result").innerHTML = 'Response: ' + JSON.stringify(message, null, 2)
+        })
+        .catch((error) => {
+            console.log('Error on get message', error)
+            document.getElementById("get-msg-result").innerHTML = "Error getting message: " + error.response.data.title + " (" + error.response.status + ")"
         })
 }
 

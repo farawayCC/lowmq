@@ -26,6 +26,15 @@
             margin: 10px;
         }
 
+        #version {
+            font-size: 10px;
+            color: #c1c1c1;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            margin: 5px;
+        }
+
         body {
             display: flex;
             flex-direction: column;
@@ -45,6 +54,7 @@
 
 <body>
     <h1>LowMQ Web Controller</h1>
+    <h3 id="version"></h3>
     <div id="segment-token" class="segment-div">
         <h3>Token</h3>
         <p id="current-token">Current token: </p>
@@ -64,6 +74,14 @@
         <button onclick="addMessage()">Add Message</button>
         <br>
         <code id="add-msg-result"></code>
+    </div>
+
+    <div class="segment-div">
+        <h3>Get Message</h3>
+        <input type="text" id="get-msg-key" placeholder="Key">
+        <button onclick="getMessage()">Get Message</button>
+        <br>
+        <code id="get-msg-result"></code>
     </div>
 
 </body>

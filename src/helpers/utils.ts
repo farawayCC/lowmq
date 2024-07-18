@@ -1,7 +1,7 @@
-import fs from "fs"
-import { join } from "path"
-import config, { rootPath } from "../config.js"
-import { makeDefaultDb } from "./localDB/index.js"
+import fs from 'fs'
+import { join } from 'path'
+import config, { rootPath } from '../config.js'
+import { makeDefaultDb } from './localDB/index.js'
 
 
 export const checkDefaults = () => {

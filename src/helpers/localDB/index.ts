@@ -2,16 +2,17 @@ import { JSONFileSync, LowSync } from 'lowdb'
 import config, { Message } from '../../config.js'
 
 
+export type Data = {
+    messages: {
+        // eslint-disable-next-line no-unused-vars
+        [key in string]: Message[] | undefined
+    }
+}
+
 export type DB = {
     read: () => void
     write: () => void
     data: Data
-}
-
-export type Data = {
-    messages: {
-        [key in string]: Message[] | undefined
-    }
 }
 
 export const makeDefaultDb = (): Data => ({ messages: {} })
@@ -37,6 +38,7 @@ export const clearDB = (db: DB) => {
 
 
 export default class LowDB {
+    // eslint-disable-next-line no-use-before-define
     private static instance: LowDB
     private db: DB
 

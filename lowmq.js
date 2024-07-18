@@ -16,7 +16,7 @@ const rootPath = isForTest
 const config = {
     dbFilePath: path.join(rootPath, 'resources', 'db.json'),
     messageFreezeTimeMinutes: 5,
-    defaultPassword: 'woof'
+    defaultPassword: 'woof',
 };
 
 /** Utility function to send RFC 9457 compliant error responses */
@@ -25,7 +25,7 @@ function sendProblemDetails(res, type, status, title, detail) {
         type,
         title,
         status,
-        detail
+        detail,
     });
 }
 
@@ -40,10 +40,20 @@ const helpInfo = async (_, res) => {
         sendProblemDetails(res, 'file-read-error', 500, 'Error reading help.html file', error?.message);
     }
 };
+const version = async (_, res) => {
+    try {
+        const packageFile = await fs.readFile(join(rootPath, 'package.json'), 'utf-8');
+        const packageJson = JSON.parse(packageFile);
+        res.json(packageJson.version);
+    }
+    catch (error) {
+        sendProblemDetails(res, 'file-read-error', 500, 'Error reading package.json file', error?.message);
+    }
+};
 const controllerHtml = async (_, res) => {
     try {
         const pathToHelpHTMLFile = join(rootPath, 'resources', 'controller.html');
-        let controllerHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8');
+        const controllerHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8');
         res.send(controllerHTMLContent);
     }
     catch (error) {
@@ -53,7 +63,7 @@ const controllerHtml = async (_, res) => {
 const controllerJs = async (_, res) => {
     try {
         const pathToHelpHTMLFile = join(rootPath, 'resources', 'controller.js');
-        let helpHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8');
+        const helpHTMLContent = await fs.readFile(pathToHelpHTMLFile, 'utf-8');
         res.send(helpHTMLContent);
     }
     catch (error) {
@@ -85,6 +95,7 @@ const validPassword = (req, res, next) => {
 const generalRouter = express.Router();
 generalRouter.get('', (_, res) => { res.send('All systems online'); });
 generalRouter.get('/help', helpInfo);
+generalRouter.get('/version', version);
 generalRouter.get('/controller', controllerHtml);
 generalRouter.get('/controller.js', controllerJs);
 generalRouter.get('/login/verify', validPassword, (_, res) => res.send('ok'));
@@ -102,6 +113,7 @@ const initLowDB = () => {
     return db;
 };
 class LowDB {
+    // eslint-disable-next-line no-use-before-define
     static instance;
     db;
     constructor() {
@@ -136,7 +148,7 @@ const isMessageFrozen = (message) => {
 };
 const freezeMessage$1 = (message) => {
     const toMS = (minutes) => minutes * 60 * 1000;
-    var freezeTime = toMS(message.freezeTimeMin);
+    let freezeTime = toMS(message.freezeTimeMin);
     freezeTime = Math.max(freezeTime, toMS(1)); // 1 min minimum
     freezeTime = Math.min(freezeTime, toMS(60)); // 1 hour maximum
     message.frozenTo = new Date(new Date().getTime() + freezeTime);
@@ -149,7 +161,7 @@ const makeNewMessage = (key, value, freezeTime) => {
         key,
         value,
         frozenTo: new Date(0),
-        freezeTimeMin: freezeTime
+        freezeTimeMin: freezeTime,
     };
 };
 
@@ -205,7 +217,7 @@ const postMessage = (req, res) => {
     if (!messages[key])
         messages[key] = [];
     const newMessage = makeNewMessage(key, value, freezeTime);
-    messages[key]?.push(newMessage);
+    messages[key].push(newMessage);
     db.write();
     res.send(newMessage);
 };
@@ -221,7 +233,7 @@ const updateMessage = (req, res) => {
     const messages = db.data.messages;
     if (!messages[key])
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
-    const message = messages[key]?.find(m => m._id === id);
+    const message = messages[key].find(m => m._id === id);
     if (!message)
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
     message.value = newValue;
@@ -238,12 +250,43 @@ const freezeMessage = (req, res) => {
     const messages = db.data.messages;
     if (!messages[key])
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
-    const message = messages[key]?.find(m => m._id === id);
+    const message = messages[key].find(m => m._id === id);
     if (!message)
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
     const frozenMessage = freezeMessage$1(message);
     db.write();
     res.send(frozenMessage);
+};
+const unfreezeMessage = (req, res) => {
+    const { key, id, all } = req.body;
+    if (typeof key !== 'string')
+        return sendProblemDetails(res, ProblemDetailsTypes.invaildPayload, 400, 'Invalid payload', 'Expected string key in payload, got: ' + key);
+    const db = LowDB.getDB();
+    const messages = db.data.messages;
+    if (!messages[key])
+        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
+    let message;
+    if (typeof id === 'string') {
+        // Unfreeze a specific message
+        message = messages[key].find(m => m._id === id);
+        if (!message)
+            return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
+    }
+    else if (all === true || all === 'true') {
+        // Unfreeze all messages for key
+        messages[key].forEach(m => m.frozenTo = new Date(0));
+        message = messages[key][0]; // Hacky way to return a message
+    }
+    else {
+        // Unfreeze first message
+        const frozenMessages = messages[key].filter(m => isMessageFrozen(m));
+        if (frozenMessages.length === 0)
+            return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No active messages', 'No active messages found for key: ' + key);
+        message = frozenMessages[0];
+    }
+    message.frozenTo = new Date(0);
+    db.write();
+    res.send(message);
 };
 const deleteMessage = (req, res) => {
     const { key, id } = req.body;
@@ -255,10 +298,10 @@ const deleteMessage = (req, res) => {
     const messages = db.data.messages;
     if (!messages[key])
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found', 'No messages found for key: ' + key);
-    const messageIndex = messages[key]?.findIndex(m => m._id === id) || -1;
+    const messageIndex = messages[key].findIndex(m => m._id === id);
     if (messageIndex === -1)
         return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No message found', 'No message found with id: ' + id);
-    const deletedMessage = messages[key]?.splice(messageIndex, 1)[0];
+    const deletedMessage = messages[key].splice(messageIndex, 1)[0];
     db.write();
     res.send(deletedMessage);
 };
@@ -279,6 +322,7 @@ messageRouter.put('/msg', updateMessage);
 messageRouter.post('/msg', postMessage);
 messageRouter.delete('/msg', deleteMessage);
 messageRouter.put('/msg/freeze', freezeMessage);
+messageRouter.put('/msg/unfreeze', unfreezeMessage);
 messageRouter.get('/msg/count', countMessages);
 
 const app = express();
@@ -303,6 +347,7 @@ const PORT = process.env.PORT || 8788;
 app.listen(PORT, () => {
     console.log(`LowMQ started with url: http://localhost:${PORT}`);
     console.log(`Basic tutorial and api reference: http://localhost:${PORT}/help`);
+    console.log(`Some basic controls: http://localhost:${PORT}/controller`);
 });
 
 http.createServer(app);

@@ -16,6 +16,16 @@ export const helpInfo = async (_: Request, res: Response) => {
     }
 }
 
+export const version = async (_: Request, res: Response) => {
+    try {
+        const packageFile = await fs.readFile(join(rootPath, 'package.json'), 'utf-8')
+        const packageJson = JSON.parse(packageFile)
+        res.json(packageJson.version)
+    } catch (error) {
+        sendProblemDetails(res, 'file-read-error', 500, 'Error reading package.json file', error?.message)
+    }
+}
+
 export const controllerHtml = async (_: Request, res: Response) => {
     try {
         const pathToHelpHTMLFile = join(rootPath, 'resources', 'controller.html')

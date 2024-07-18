@@ -54,10 +54,6 @@
 
     <h2>Advanced Examples</h2>
     <ol>
-        <li>Custom freeze time minutes:</li>
-        <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' "<url></url>/msg?freezeTimeMin=10"</code><br>
-        <small>Freezes the message for 10 minutes. Default is 5 minutes.</small>
-
         <li>Get a message and delete it in one request:</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test&amp;delete=true"</code><br>
         <small>This is useful when the processing result of a packet is 100% reliable or under a heavy load.</small>
@@ -65,7 +61,41 @@
         <li>List all keys in a database:</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/keys"</code><br>
         <small>Response: ["test"]</small>
+    </ol>
 
+    <h2>Freezing/Unfreezing</h2>
+    <ol>
+        <li>Custom freeze time minutes:</li>
+        <code>curl -X POST -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "value": "Hello World!"}' "<url></url>/msg?freezeTimeMin=10"</code><br>
+        <small>Freezes the message for 10 minutes. Default is 5 minutes.</small>
+
+        <li>Freeze</li>
+        <code>curl -X PUT -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "id": "ID_HERE"}' "<url></url>/msg/freeze"</code><br>
+        <small>Freezes the message with the given ID for the given key.</small>
+
+        <h3>Unfreeze</h3>
+        <li>Unfreeze by Id</li>
+        <code>curl -X PUT -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "id": "ID_HERE"}' "<url></url>/msg/unfreeze"</code><br>
+        <small>Unfreezes the message with the given ID for the given key.</small>
+
+        <li>Unfreeze one by Key</li>
+        <code>curl -X PUT -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test"}' "<url></url>/msg/unfreeze"</code><br>
+        <small>Unfreezes one message for the given key.</small>        
+
+        <li>Unfreeze all by Key</li>
+        <code>curl -X PUT -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "all": "true"}' "<url></url>/msg/unfreeze"</code><br>
+        <small>Unfreezes all messages for the given key.</small>
+    </ol>
+        
+    <h2>Miscellaneous</h2>
+    <ol>
+        <li>Token Verification:</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/login/verify"</code><br>
+        <small>Response: ok</small>
+
+        <li>Lowmq Version</li>
+        <code>curl -X GET "<url></url>/version"</code><br>
+        <small>Response: 0.1.2</small>
     </ol>
 </body>
 
