@@ -8,6 +8,9 @@ on:
     branches:
       - "**" # This will trigger the workflow for pull requests to any branch
 
+permissions:
+  contents: write  # Allow write access to contents for GITHUB_TOKEN
+
 jobs:
   build_test_lint:
     runs-on: ubuntu-latest
@@ -126,7 +129,9 @@ jobs:
 
       # --- Upload Release Asset ---
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: lowmq.zip
