@@ -102,17 +102,33 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag -fa latest -m "Latest release"
           git tag -fa v${{ env.version }} -m "Version ${{ env.version }}"
           git push origin --tags --force
 
-      # --- Create release ---
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: latest
-          name: ${{ env.commit_message }}
-          body: "Release version ${{ env.version }}"
-          files: lowmq.zip
+      # --- Create release via GitHub Script ---
+      - name: Create Release
+        id: create_release
+        uses: actions/github-script@v6
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_MESSAGE: ${{ env.commit_message }}
+          VERSION: ${{ env.version }}
+        with:
+          script: |
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${process.env.VERSION}`,
+              name: process.env.COMMIT_MESSAGE,
+              body: `Release version ${process.env.VERSION}`,
+              make_latest: 'true'
+            });
+            core.setOutput('upload_url', release.data.upload_url);
+
+      # --- Upload Release Asset ---
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: lowmq.zip
+          asset_name: lowmq.zip
+          asset_content_type: application/zip
