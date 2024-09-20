@@ -31,13 +31,11 @@ export const getMessage = (req: Request, res: Response) => {
     const messages = db.data.messages[key]
 
     if (!messages || messages.length === 0)
-        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found',
-            'No messages found for key: ' + key)
+        return res.sendStatus(204)
 
     const activeMessages = messages.filter(m => !isMessageFrozen(m))
     if (activeMessages.length === 0)
-        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No active messages',
-            'No active messages found for key: ' + key)
+        return res.sendStatus(204)
 
     const randomIndex = Math.floor(Math.random() * activeMessages.length)
     let message = activeMessages[randomIndex]
