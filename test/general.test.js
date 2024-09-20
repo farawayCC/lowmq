@@ -53,7 +53,7 @@ describe('Basic messages operations', function () {
                 .get(route)
                 .set('Authorization', defaultAuthValue)
                 .query({ 'key': msgName })
-            expect(responseReadAlreadyFetchedMsg.statusCode).to.equals(404)
+            expect(responseReadAlreadyFetchedMsg.statusCode).to.equals(204)
         })
 
         it('can get an empty message', async () => {
@@ -61,7 +61,7 @@ describe('Basic messages operations', function () {
                 .get(route)
                 .set('Authorization', defaultAuthValue)
                 .query({ 'key': 'empty' })
-            expect(responseReadEmptyMsg.statusCode).to.equals(404)
+            expect(responseReadEmptyMsg.statusCode).to.equals(204)
         })
 
         it('can freeze a message', async () => {
@@ -110,7 +110,7 @@ describe('Basic messages operations', function () {
                 .get(route)
                 .set('Authorization', defaultAuthValue)
                 .query({ 'key': msgName })
-            expect(responseReadDeletedMsg.statusCode).to.equals(404)
+            expect(responseReadDeletedMsg.statusCode).to.equals(204)
         })
     })
 
