@@ -83,16 +83,36 @@ jobs:
 
       - run: zip -r lowmq.zip lowmq-latest
 
-      # --- Create release ---
-      - name: Get the merge commit message
+      # --- Get the last commit message ---
+      - name: Get the last commit message
         id: get_commit_message
         run: |
-          commit_message=$(git log --format=%B -n 1 | head -n 1)
+          commit_message=$(git log -1 --pretty=%B | head -n 1)
           echo "commit_message=${commit_message}" >> $GITHUB_ENV
 
-      - name: Create release
+      # --- Get version from package.json ---
+      - name: Get version from package.json
+        id: get_version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo "version=${version}" >> $GITHUB_ENV
+
+      # --- Create tags ---
+      - name: Create tags
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git tag -fa latest -m "Latest release"
+          git tag -fa v${{ env.version }} -m "Version ${{ env.version }}"
+          git push origin --tags --force
+
+      # --- Create release ---
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ steps.get_commit_message.outputs.commit_message }}
-          files: lowmq.zip
           tag_name: latest
+          name: ${{ env.commit_message }}
+          body: "Release version ${{ env.version }}"
+          files: lowmq.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
