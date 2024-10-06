@@ -51,6 +51,20 @@ export const getMessage = (req: Request, res: Response) => {
     res.send(message)
 }
 
+export const getAllMessages = (req: Request, res: Response) => {
+    const db = LowDB.getDB()
+    const key = req.query.key as string | undefined
+    if (!key)
+        return res.send(db.data.messages)
+
+    const messages = db.data.messages[key]
+    if (!messages)
+        return res.json([])
+
+
+    return res.send(messages)
+}
+
 export const postMessage = (req: Request, res: Response) => {
     // Check types like in getMessage
     const { key, value } = req.body

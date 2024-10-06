@@ -84,6 +84,25 @@
         <code id="get-msg-result"></code>
     </div>
 
+    <div class="segment-div">
+        <h3>All Messages</h3>
+        <button onclick="getAllMessages()">Get All Messages</button>
+        <br>
+        <select id="message-list" onchange="selectMessage()">
+            <!-- Options will be populated with message keys -->
+        </select>
+        <br>
+        <code id="all-msg-result"></code>
+
+        <h3>Edit Selected Message</h3>
+        <input type="text" id="edit-msg-id" placeholder="Message ID" readonly>
+        <input type="text" id="edit-msg-key" placeholder="Key">
+        <input type="text" id="edit-msg-value" placeholder="Value">
+        <button onclick="updateMessage()">Update Message</button>
+        <br>
+        <code id="edit-msg-result"></code>
+    </div>
+
 </body>
 
 </html>

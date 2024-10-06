@@ -74,7 +74,14 @@ async function addMessage() {
     if (!isTokenLegit) return
 
     const key = document.getElementById("add-msg-key").value
-    const value = document.getElementById("add-msg-value").value
+    let value = document.getElementById("add-msg-value").value
+
+    try {
+        value = JSON.parse(value)
+    } catch (error) {
+        document.getElementById("add-msg-result").innerHTML = "Value must be a valid JSON."
+        return
+    }
 
     await axios.post(
         serviceUrl + '/msg',
@@ -127,6 +134,73 @@ async function countMessages() {
         .catch((error) => {
             console.log('Error on count messages', error)
             document.getElementById("count-msg-result").innerHTML = "Error counting messages: " + error.response.data + " (" + error.response.status + ")"
+        })
+}
+
+// Fetch all messages and populate the dropdown
+async function getAllMessages() {
+    if (!token) return
+    if (!isTokenLegit) return
+
+    await axios.get(serviceUrl + '/msg/all', defaultOptions)
+        .then(response => response.data)
+        .then((messages) => {
+            const messageList = document.getElementById("message-list")
+            messageList.innerHTML = '' // Clear the list before adding new options
+            for (const [key, messageArray] of Object.entries(messages)) {
+                messageArray.forEach(message => {
+                    const option = document.createElement("option")
+                    option.value = JSON.stringify({ key: key, id: message._id, value: message.value })
+                    option.text = `${key}: ${JSON.stringify(message.value)}`
+                    messageList.appendChild(option)
+                })
+            }
+        })
+        .catch((error) => {
+            console.log('Error on getting all messages', error)
+            document.getElementById("all-msg-result").innerHTML = "Error getting messages: " + error.response.data + " (" + error.response.status + ")"
+        })
+}
+
+// Handle message selection from dropdown
+function selectMessage() {
+    const selectedMessage = document.getElementById("message-list").value
+    if (!selectedMessage) return
+
+    const message = JSON.parse(selectedMessage)
+    document.getElementById("edit-msg-id").value = message.id
+    document.getElementById("edit-msg-key").value = message.key
+    document.getElementById("edit-msg-value").value = JSON.stringify(message.value, null, 2)
+}
+
+// Update a message with the new key and value
+async function updateMessage() {
+    const id = document.getElementById("edit-msg-id").value
+    const key = document.getElementById("edit-msg-key").value
+    let newValue = document.getElementById("edit-msg-value").value
+
+    // newValue to json
+    try {
+        newValue = JSON.parse(newValue)
+    } catch (error) {
+        document.getElementById("edit-msg-result").innerHTML = "New value must be a valid JSON."
+        return
+    }
+
+    if (!id || !key || !newValue) {
+        document.getElementById("edit-msg-result").innerHTML = "All fields are required."
+        return
+    }
+
+    await axios.put(serviceUrl + '/msg', { id, key, newValue }, defaultOptions)
+        .then(response => response.data)
+        .then((updatedMessage) => {
+            document.getElementById("edit-msg-result").innerHTML = "Message updated: " + JSON.stringify(updatedMessage, null, 2)
+            getAllMessages() // Refresh the list after update
+        })
+        .catch((error) => {
+            console.log('Error on updating message', error)
+            document.getElementById("edit-msg-result").innerHTML = "Error updating message: " + error.response.data + " (" + error.response.status + ")"
         })
 }
 
