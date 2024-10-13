@@ -41,6 +41,9 @@
         <li><b>Get a message</b> for the key "test":</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg?key=test"</code><br>
 
+        <li><b>Get all messages</b> for the key "test":</li>
+        <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg/all?key=test"</code><br>
+
         <li><b>Count messages</b> by keys</li>
         <code>curl -X GET -H "Authorization: token woof" "<url></url>/msg/count"</code><br>
         <small>Response: {"test": 1}</small>
@@ -80,13 +83,13 @@
 
         <li>Unfreeze one by Key</li>
         <code>curl -X PUT -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test"}' "<url></url>/msg/unfreeze"</code><br>
-        <small>Unfreezes one message for the given key.</small>        
+        <small>Unfreezes one message for the given key.</small>
 
         <li>Unfreeze all by Key</li>
         <code>curl -X PUT -H "Authorization: token woof" -H "Content-Type: application/json" -d '{"key": "test", "all": "true"}' "<url></url>/msg/unfreeze"</code><br>
         <small>Unfreezes all messages for the given key.</small>
     </ol>
-        
+
     <h2>Miscellaneous</h2>
     <ol>
         <li>Token Verification:</li>
