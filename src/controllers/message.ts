@@ -31,13 +31,11 @@ export const getMessage = (req: Request, res: Response) => {
     const messages = db.data.messages[key]
 
     if (!messages || messages.length === 0)
-        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No messages found',
-            'No messages found for key: ' + key)
+        return res.sendStatus(204)
 
     const activeMessages = messages.filter(m => !isMessageFrozen(m))
     if (activeMessages.length === 0)
-        return sendProblemDetails(res, ProblemDetailsTypes.noMessagesFound, 404, 'No active messages',
-            'No active messages found for key: ' + key)
+        return res.sendStatus(204)
 
     const randomIndex = Math.floor(Math.random() * activeMessages.length)
     let message = activeMessages[randomIndex]
@@ -51,6 +49,19 @@ export const getMessage = (req: Request, res: Response) => {
 
     db.write()
     res.send(message)
+}
+
+export const getAllMessages = (req: Request, res: Response) => {
+    const db = LowDB.getDB()
+    const key = req.query.key as string | undefined
+    if (!key)
+        return res.send(db.data.messages)
+
+    const messages = db.data.messages[key]
+    if (!messages)
+        return res.json([])
+
+    return res.send(messages)
 }
 
 export const postMessage = (req: Request, res: Response) => {

@@ -11,6 +11,7 @@ messageRouter.put('/msg', ctrl.updateMessage)
 messageRouter.post('/msg', ctrl.postMessage)
 messageRouter.delete('/msg', ctrl.deleteMessage)
 messageRouter.put('/msg/freeze', ctrl.freezeMessage)
+messageRouter.get('/msg/all', ctrl.getAllMessages)
 messageRouter.put('/msg/unfreeze', ctrl.unfreezeMessage)
 messageRouter.get('/msg/count', ctrl.countMessages)
 
