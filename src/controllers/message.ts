@@ -61,7 +61,6 @@ export const getAllMessages = (req: Request, res: Response) => {
     if (!messages)
         return res.json([])
 
-
     return res.send(messages)
 }
 
